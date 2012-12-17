@@ -28,6 +28,6 @@ libraryDependencies in ThisBuild ++= Seq(
    "com.chuusai" % "shapeless" % "1.2.3" cross CrossVersion.full
 )
 
-scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked")
+scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature")
 
 assemblySettings
