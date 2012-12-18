@@ -6,75 +6,68 @@ import FromTraversable._
 import Traversables._
 import Nat._
 import Tuples._
+import scalaz._
+import Scalaz._
 
-// Maybe a way of getting to a ProductArity,Nat from ProductN type
-trait ToArity[P, N <: Nat]
-object ToArity {
-  implicit def prod1[P <: Product1[_]] = new ToArity[P, _1] {}
-  implicit def prod2[P <: Product2[_, _]] = new ToArity[P, _2] {}
-  implicit def tuple2: ToArity[(String, String), _2] = new ToArity[(String, String), _2] {}
-  // ad nauseum...
-}
+abstract class CMDS[T](rawdata: Seq[T]) {
 
-// Define a uniform HList type from type S
-trait SizedHList[A, N <: Nat] {
-  type Out <: HList
-}
+  // TODO Memoize the opt output functions, NB: Threadsafe!
+  implicit def opt[R]( s: T, f: () => R ): () => Option[R] = () => rawdata.find(_==s).map( _ => f() )
+  implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): () => Option[R] = () => tailfind(s).map(p(f,_))
 
-trait SizedHListAux[A, N <: Nat, T <: HList]
+  def tailfind( s: T ): Option[Seq[T]] = {
+    // Oh scala your lack of tailOption is pathetic
+    val tl = try { rawdata.dropWhile( _ != s ).tail }
+             catch { case _: Throwable => Nil }
+    tl match {
+      case Nil => None
+      case ret => Some(ret)
+    }
+  }
 
-object SizedHList {
-  implicit def make[A, N <: Nat, T <: HList](implicit k: SizedHListAux[A, N, T]) = new SizedHList[A, N] {
-    type Out = T
+  trait Producer[R, P <: Product] {
+    type Out = R
+    def apply( f: P => R, as: Seq[T] ): Out
+  }
+
+  object Producer {
+    implicit def getmeone[R, P <: Product, N <: Nat, H <: HList]
+        ( implicit tp: TuplerAux[H, P], hl: LengthAux[H, N], toHL: FromTraversable[H],
+                   allA: LUBConstraint[H, T], toI: ToInt[N]) = new Producer[R,P] {
+        def apply( f: P => R, as: Seq[T] ) = f((toHL(as.take(toI())).get).tupled)
+    }
+  }
+
+  def mandatory = TRUE
+
+  def usage: () => Option[String] = () => None
+  def version: () => Option[String] = () => None
+  def handle_info = sys.exit()
+
+  // Convenience methods, TRUE and FALSE are suprisingly common
+  val TRUE = () => true
+  val FALSE = () => false
+
+  // Call all the startup code
+  val startup = {
+    version().map(x=>if(!x.isEmpty) println("Version: "+x) else ())
+    usage().map(x=>if(!x.isEmpty) println("Usage: "+x) else ())
+    // "handle" whether or not we exit
+    //handle_info //WHY DOES THIS CAUSE A NON-0 EXIT?
+    // mandatory TODO
   }
 }
 
-object SizedHListAux {
-  implicit def base[A, H <: HList] = new SizedHListAux[A, _0, HNil] {}
-  implicit def induct[A, H <: HList, N <: Nat, P <: Nat, R <: PredAux[N, P]](implicit r: R, k: SizedHListAux[A, P, H]) = new SizedHListAux[A, N, A :: H] {}
-}
-
-trait SomeFun {
-  type Result
-  def apply(): Result
-}
-
-//  // This works but has fixed arity of the Product type of Function1's argument
-//  object SomeFun {
-//    implicit def fromF1[T]( f1: (Function1[(String,String),T],List[String]) ) = new SomeFun {
-//      type Result = (T,List[String])
-//      def apply(): Result = {
-//        val (ts,rest) = (f1._2.take(2),f1._2.drop(2))
-//        (f1._1(ts.toHList[String::String::HNil].get.tupled),rest)
-//      }
-//    }
-//  }
-
-// But I want to abstract over S, the contained type in the List
-// over P the Product type which is the arg notably its arity
-// This means we need to recover arity of the Product type and render it in value space
-// and also means that we need to compute the type of the intermediate HList
-object SomeFun {
-  def produce(m: SomeFun): m.Result = m()
-
-  // TODO implement fromF0/Function0
-  // TODO fix the tupliness of f1 to better take two args...?
-  implicit def fromF1[T, A, P <: Product, N <: Nat, H <: HList](f1: (P => T, List[A]))(implicit k: ToArity[P, N], toI: ToInt[N], l: SizedHListAux[A, N, H], toHL: FromTraversable[H], tp: TuplerAux[H, P]) =
-    new SomeFun {
-      type Result = (T, List[A])
-      def apply(): Result = {
-        val (f, as) = f1
-        val (ts, rest) = (as.take(toI()), as.drop(toI()))
-        f((toHL(ts).get).tupled) -> rest
-      }
-    }
-  // Debug Arity checker
-  def printArity[P <: Product, N <: Nat](p: P)(implicit k: ToArity[P, N], toI: ToInt[N]) = println("Arity: " + toI())
-}
-
-object Test {
-  val thedata = List("foo", "bar", "baz", "bob")
-  val tfn = (x: (String, String)) => println("%s and %s".format(x._1, x._2))
-  def foo = SomeFun.printArity("a" -> "b")
-  //def doit = SomeFun.produce((tfn, thedata))
+object Test extends App {
+  object CFG extends CMDS( args ) {
+    def name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2))
+    def all = opt("--all", TRUE)
+    def absent = opt("--absent", TRUE)
+    override def version = opt("--version",() => "10.1.5")
+    override def usage = opt("--help",() => "Some random help text here")
+    //override def mandatory = name ~ all ~ verbose
+  }
+  println(CFG.name())
+  println(CFG.all())
+  println(CFG.absent())
 }

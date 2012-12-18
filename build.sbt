@@ -26,6 +26,7 @@ resolvers in ThisBuild += {
 
 libraryDependencies in ThisBuild ++= Seq(
    "com.chuusai" % "shapeless" % "1.2.3" cross CrossVersion.full
+   ,"org.scalaz" % "scalaz-core_2.10.0-RC5" % "7.0.0-M6"
 )
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature")
