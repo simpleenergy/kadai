@@ -11,9 +11,8 @@ import Scalaz._
 
 abstract class CMDS[T](rawdata: Seq[T]) {
 
-  // TODO Memoize the opt output functions, NB: Threadsafe!
-  implicit def opt[R]( s: T, f: () => R ): () => Option[R] = () => rawdata.find(_==s).map( _ => f() )
-  implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): () => Option[R] = () => tailfind(s).map(p(f,_))
+  implicit def opt[R]( s: T, f: () => R ): Option[R] = rawdata.find(_==s).map( _ => f() )
+  implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): Option[R] = tailfind(s).map(p(f,_))
 
   def tailfind( s: T ): Option[Seq[T]] = {
     // Oh scala your lack of tailOption is pathetic
@@ -38,10 +37,8 @@ abstract class CMDS[T](rawdata: Seq[T]) {
     }
   }
 
-  def mandatory = TRUE
-
-  def usage: () => Option[String] = () => None
-  def version: () => Option[String] = () => None
+  def usage: Option[String] = None
+  def version: Option[String] = None
   def handle_info = sys.exit()
 
   // Convenience methods, TRUE and FALSE are suprisingly common
@@ -50,24 +47,24 @@ abstract class CMDS[T](rawdata: Seq[T]) {
 
   // Call all the startup code
   val startup = {
-    version().map(x=>if(!x.isEmpty) println("Version: "+x) else ())
-    usage().map(x=>if(!x.isEmpty) println("Usage: "+x) else ())
+    version.map(x=>if(!x.isEmpty) println("Version: "+x) else ())
+    usage.map(x=>if(!x.isEmpty) println("Usage: "+x) else ())
     // "handle" whether or not we exit
     //handle_info //WHY DOES THIS CAUSE A NON-0 EXIT?
-    // mandatory TODO
   }
 }
 
 object Test extends App {
   object CFG extends CMDS( args ) {
-    def name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2))
-    def all = opt("--all", TRUE)
-    def absent = opt("--absent", TRUE)
+    lazy val name = opt("--name", (x: (String, String)) => { println("bang"); "%s and %s".format(x._1, x._2) })
+    lazy val all = opt("--all", TRUE)
+    lazy val absent = opt("--absent", TRUE)
     override def version = opt("--version",() => "10.1.5")
     override def usage = opt("--help",() => "Some random help text here")
-    //override def mandatory = name ~ all ~ verbose
   }
-  println(CFG.name())
-  println(CFG.all())
-  println(CFG.absent())
+//  println(CFG.name)
+//  println(CFG.name)
+  println("ALL: "+CFG.all)
+  println("ALL: "+CFG.all)
+  println(CFG.absent)
 }
