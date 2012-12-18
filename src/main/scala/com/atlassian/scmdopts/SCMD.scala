@@ -47,10 +47,10 @@ abstract class CMDS[T](rawdata: Seq[T]) {
 
   // Call all the startup code
   val startup = {
-    version.map(x=>if(!x.isEmpty) println("Version: "+x) else ())
-    usage.map(x=>if(!x.isEmpty) println("Usage: "+x) else ())
-    // "handle" whether or not we exit
-    //handle_info //WHY DOES THIS CAUSE A NON-0 EXIT?
+    val a = for { vs <- version; if !vs.isEmpty } yield println("Version: "+vs)
+    val b = for { us <- usage; if !us.isEmpty } yield println("Usage: "+us)
+    val aorb = for{ x <- a.orElse(b) } yield handle_info
+    // TODO validation
   }
 }
 
