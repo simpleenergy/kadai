@@ -1,4 +1,4 @@
-package com.test1
+package com.atlassian.kadai
 
 import scala.language.implicitConversions
 import shapeless._
@@ -9,7 +9,7 @@ import Tuples._
 import scalaz._
 import Scalaz._
 
-abstract class CMDS[T](rawdata: Seq[T]) {
+abstract class SCMD[T](rawdata: Seq[T]) {
 
   implicit def opt[R]( s: T, f: () => R ): Option[R] = rawdata.find(_==s).map( _ => f() )
   implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): Option[R] = tailfind(s).map(p(f,_))
@@ -39,7 +39,7 @@ abstract class CMDS[T](rawdata: Seq[T]) {
 
   def usage: Option[String] = None
   def version: Option[String] = None
-  def handle_info = sys.exit()
+  def handle_info() { sys.exit() }
 
   // Convenience methods, TRUE and FALSE are suprisingly common
   val TRUE = () => true
@@ -54,17 +54,16 @@ abstract class CMDS[T](rawdata: Seq[T]) {
   }
 }
 
-object Test extends App {
-  object CFG extends CMDS( args ) {
-    lazy val name = opt("--name", (x: (String, String)) => { println("bang"); "%s and %s".format(x._1, x._2) })
+object CMDExample {
+  object CFG extends SCMD( List( "--name", "bob", "baz" ) ) {
+    // NB: lazy val effectively memoizes the result
+    lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2))
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)
     override def version = opt("--version",() => "10.1.5")
     override def usage = opt("--help",() => "Some random help text here")
   }
-//  println(CFG.name)
-//  println(CFG.name)
-  println("ALL: "+CFG.all)
+  println(CFG.name)
   println("ALL: "+CFG.all)
   println(CFG.absent)
 }
