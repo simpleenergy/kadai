@@ -1,4 +1,4 @@
-package com.atlassian.kadai
+package io.kadai
 
 import scala.language.implicitConversions
 import shapeless._
@@ -9,7 +9,7 @@ import Tuples._
 import scalaz._
 import Scalaz._
 
-abstract class SCMD[T](rawdata: Seq[T]) {
+abstract class CmdOpts[T](rawdata: Seq[T]) {
 
   implicit def opt[R]( s: T, f: () => R ): Option[R] = rawdata.find(_==s).map( _ => f() )
   implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): Option[R] = for {
@@ -60,7 +60,7 @@ abstract class SCMD[T](rawdata: Seq[T]) {
 }
 
 object CMDExample {
-  object CFG extends SCMD( List( "--name", "bob", "baz" ) ) {
+  object CFG extends CmdOpts( List( "--name", "bob", "baz" ) ) {
     // NB: lazy val effectively memoizes the result
     lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2))
     lazy val all = opt("--all", TRUE)

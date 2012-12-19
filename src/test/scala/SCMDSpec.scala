@@ -1,11 +1,11 @@
-package com.atlassian.kadai
+package io.kadai
 
 import org.specs2.mutable.Specification
 
 class SCMDSpec extends Specification {
   case class Person(given: String, family: String)
 
-  class Conf1(x: Seq[String]) extends SCMD(x) {
+  class Conf1(x: Seq[String]) extends CmdOpts(x) {
     lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2) )
     lazy val person = opt("--name", (x: (String, String)) => Person(x._1, x._2) )
     lazy val all = opt("--all", TRUE)
