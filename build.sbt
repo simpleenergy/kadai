@@ -1,6 +1,6 @@
 import AssemblyKeys._
 
-name := "scmdopts"
+name := "kadai"
 
 version in ThisBuild := "0.0.1-SNAPSHOT"
 
