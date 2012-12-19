@@ -12,7 +12,10 @@ import Scalaz._
 abstract class SCMD[T](rawdata: Seq[T]) {
 
   implicit def opt[R]( s: T, f: () => R ): Option[R] = rawdata.find(_==s).map( _ => f() )
-  implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): Option[R] = tailfind(s).map(p(f,_))
+  implicit def opt[R,P <: Product]( s: T, f: P => R )(implicit p: Producer[R,P]): Option[R] = for {
+    tl <- tailfind(s)
+    ret <- p(f,tl)
+  } yield ret
 
   def tailfind( s: T ): Option[Seq[T]] = {
     // Oh scala your lack of tailOption is pathetic
@@ -25,7 +28,7 @@ abstract class SCMD[T](rawdata: Seq[T]) {
   }
 
   trait Producer[R, P <: Product] {
-    type Out = R
+    type Out = Option[R]
     def apply( f: P => R, as: Seq[T] ): Out
   }
 
@@ -33,7 +36,9 @@ abstract class SCMD[T](rawdata: Seq[T]) {
     implicit def getmeone[R, P <: Product, N <: Nat, H <: HList]
         ( implicit tp: TuplerAux[H, P], hl: LengthAux[H, N], toHL: FromTraversable[H],
                    allA: LUBConstraint[H, T], toI: ToInt[N]) = new Producer[R,P] {
-        def apply( f: P => R, as: Seq[T] ) = f((toHL(as.take(toI())).get).tupled)
+        def apply( f: P => R, as: Seq[T] ) = for {
+          hl <- toHL(as.take(toI()))
+        } yield f(hl.tupled)
     }
   }
 
