@@ -16,7 +16,7 @@ organization := "io.kadai"
 
 name := "kadai"
 
-version in ThisBuild := "0.0.1"
+version in ThisBuild := "0.0.1-SNAPSHOT"
 
 licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
 
@@ -46,8 +46,8 @@ scalaVersion in ThisBuild := "2.10.0-RC5"
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
-resolvers ++= Seq("snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-                  "releases"  at "http://oss.sonatype.org/content/repositories/releases")
+resolvers ++= Seq("Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
+                 ,"Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases")
 
 libraryDependencies in ThisBuild ++= Seq(
    "com.chuusai" %  "shapeless"              % "1.2.3"             cross CrossVersion.full
@@ -57,4 +57,7 @@ libraryDependencies in ThisBuild ++= Seq(
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature")
 
-mappings in (Compile, packageBin) ++= Seq( file("LICENSE") -> "META-INF/LICENSE" )
+mappings in (Compile, packageBin) ++= Seq(
+   file("LICENSE") -> "META-INF/LICENSE"
+  ,file("NOTICE") -> "META-INF/NOTICE"
+)
