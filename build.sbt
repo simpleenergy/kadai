@@ -24,8 +24,8 @@ homepage := Some(url("https://bitbucket.org/atlassian/kadai"))
 
 pomExtra := (
     <scm>
-        <url>git@github.com:atlassian/scala-machines.git</url>
-        <connection>scm:git:git@github.com:atlassian/scala-machines.git</connection>
+        <url>git@bitbucket.org:atlassian/kadai.git</url>
+        <connection>scm:git:git@bitbucket.org:atlassian/kadai.git</connection>
         <developerConnection>scm:git:git@bitbucket.org:atlassian/kadai.git</developerConnection>
     </scm>
     <distributionManagement>
