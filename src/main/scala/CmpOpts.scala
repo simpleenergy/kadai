@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 package io.kadai
+package cmd
 
-import scala.language.implicitConversions
-import scalaz.Scalaz._
+//import scalaz.Scalaz._
 import shapeless._
 
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
-  def opt[H <: HList,N <: Nat,F,R](s: T, f: F)
-      ( implicit toHLF: FnHListerAux[F,H => R], hlen: LengthAux[H,N]
-                ,toHL: FromTraversable[H], allT: LUBConstraint[H,T]
-                ,toI: ToInt[N]) = for {
-    tl <- if(toI() > 0) tailfind(s) else rawdata.find(_ == s).map(_ => Nil)
-    ahl <- toHL(tl.take(toI()))
-  } yield toHLF(f)(ahl)
+  def opt[H <: HList, N <: Nat, F, R](t: T, f: F)(
+    implicit toHLF: FnHListerAux[F, H => R],
+    hlen: LengthAux[H, N],
+    toHL: FromTraversable[H],
+    size: ToInt[N]) =
+    for {
+      tl <- if (size() > 0) tailfind(t) else rawdata.find(_ == t).map(_ => Nil)
+      ahl <- toHL(tl.take(size()))
+    } yield toHLF(f)(ahl)
 
   private def tailfind(s: T): Option[Seq[T]] = {
     // l.tailOption would be very nice here...

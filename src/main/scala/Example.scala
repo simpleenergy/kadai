@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 package io.kadai
+package cmd
 
 object Example extends App {
   case class OneThing(s: String)
