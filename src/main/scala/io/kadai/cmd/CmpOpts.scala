@@ -20,23 +20,17 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
 
   def opt[H <: HList, N <: Nat, F, R](t: T, f: F)(
     implicit hlisted: FnHListerAux[F, H => R],
-    hlen: LengthAux[H, N],
+    length: LengthAux[H, N],
     toHList: FromTraversable[H],
     size: ToInt[N]): Option[R] =
     for {
-      ts <- if (size() > 0) tailfind(t) else rawdata.find{ _ == t }.map { _ => Nil }
+      ts <- if (size() > 0) tailfind(t) else rawdata.find { _ == t }.map { _ => Nil }
       hlist <- toHList(ts.take(size()))
     } yield hlisted(f)(hlist)
 
-  private def tailfind(t: T): Option[Seq[T]] = {
-    // l.tailOption would be very nice here...
-    try rawdata.dropWhile(_ != t).tail
-    catch { case util.control.NonFatal(_) => Nil }
-  } match {
-    case Nil => None
-    case ret => Some(ret)
-  }
-
+  private def tailfind(t: T): Option[Seq[T]] = 
+    tailOption(rawdata.dropWhile(_ != t))
+  
   protected def usage: Option[String] = None
   protected def version: Option[String] = None
   protected def handleInfo() { sys.exit() }
