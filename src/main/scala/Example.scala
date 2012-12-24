@@ -14,9 +14,11 @@
 package io.kadai
 
 object Example extends App {
-  object CFG extends CmdOpts(List("--name", "bob", "baz")) {
+  case class OneThing(s: String)
+  object CFG extends CmdOpts(List("--name", "bob", "baz", "--one", "jobbie")) {
     // NB: lazy val effectively memoizes the result
     lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2))
+    lazy val onearg = opt("--one", (x: String) => OneThing(x))
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)
     override def version = opt("--version", () => "10.1.5")
@@ -25,4 +27,5 @@ object Example extends App {
   println(CFG.name)
   println("ALL: " + CFG.all)
   println(CFG.absent)
+  println(CFG.onearg)
 }

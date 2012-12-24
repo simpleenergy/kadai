@@ -17,10 +17,12 @@ import org.specs2.mutable.Specification
 
 class CmdOptsSpec extends Specification {
   case class Person(given: String, family: String)
+  case class OneThing(s: String)
 
   class Conf1(x: Seq[String]) extends CmdOpts(x) {
     lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2) )
     lazy val person = opt("--name", (x: (String, String)) => Person(x._1, x._2) )
+    lazy val onething = opt("--one", (x: String) => OneThing(x) )
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)
     override def version = opt("--version",() => "10.1.5")
@@ -54,6 +56,11 @@ class CmdOptsSpec extends Specification {
       c.person must be equalTo None
       c.all must be equalTo None
       c.absent must be equalTo None
+    }
+
+    "One" in {
+      val c = new Conf1( List( "--one", "thing" ) )
+      c.onething must be equalTo Some(OneThing("thing"))
     }
 
     // Test unsatisfable view, i.e. generator functionc cannot operate
