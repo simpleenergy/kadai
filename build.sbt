@@ -16,7 +16,7 @@ organization := "io.kadai"
 
 name := "kadai"
 
-version in ThisBuild := "0.0.1-SNAPSHOT"
+version in ThisBuild := "0.0.1"
 
 licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
 
