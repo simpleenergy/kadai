@@ -16,10 +16,6 @@ package io.kadai
 import scala.language.implicitConversions
 import scalaz.Scalaz._
 import shapeless._
-import FromTraversable._
-import Nat._
-import Traversables._
-import Tuples._
 
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
@@ -27,11 +23,11 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
       ( implicit toHLF: FnHListerAux[F,H => R], hlen: LengthAux[H,N]
                 ,toHL: FromTraversable[H], allT: LUBConstraint[H,T]
                 ,toI: ToInt[N]) = for {
-    tl <- if(toI() > 0) tailfind(s) else rawdata.find(_ == s).map(_=>Nil)
+    tl <- if(toI() > 0) tailfind(s) else rawdata.find(_ == s).map(_ => Nil)
     ahl <- toHL(tl.take(toI()))
   } yield toHLF(f)(ahl)
 
-  def tailfind(s: T): Option[Seq[T]] = {
+  private def tailfind(s: T): Option[Seq[T]] = {
     // l.tailOption would be very nice here...
     val tl =
       try { rawdata.dropWhile(_ != s).tail }
@@ -43,9 +39,9 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
     }
   }
 
-  def usage: Option[String] = None
-  def version: Option[String] = None
-  def handle_info() { sys.exit() }
+  protected def usage: Option[String] = None
+  protected def version: Option[String] = None
+  protected def handle_info() { sys.exit() }
 
   // Convenience methods, TRUE and FALSE are suprisingly common
   val TRUE = () => true
