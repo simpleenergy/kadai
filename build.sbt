@@ -42,20 +42,20 @@ pomExtra := (
     </distributionManagement>
 )
 
-scalaVersion in ThisBuild := "2.10.0-RC5"
+scalaVersion in ThisBuild := "2.10.0"
 
 resolvers ++= Seq("Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
                  ,"Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases")
 
 libraryDependencies in ThisBuild ++= Seq(
-   "com.chuusai" %  "shapeless"              % "1.2.3"             cross CrossVersion.full
-  ,"org.scalaz"  %  "scalaz-core_2.10.0-RC5" % "7.0.0-M6"
-  ,"org.specs2"  %  "specs2_2.10.0-RC5"      % "1.13-SNAPSHOT"   % "test"
+   "com.chuusai"  %  "shapeless_2.10.0-RC5" % "1.2.3" 
+  ,"org.scalaz"  %%  "scalaz-core"          % "7.0.0-M7"
+  ,"org.specs2"  %%  "specs2"               % "1.13"       % "test"
 )
 
-scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature")
+scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature", "-language:_")
 
 mappings in (Compile, packageBin) ++= Seq(
    file("LICENSE") -> "META-INF/LICENSE"
-  ,file("NOTICE") -> "META-INF/NOTICE"
+  ,file("NOTICE")  -> "META-INF/NOTICE"
 )
