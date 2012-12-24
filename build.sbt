@@ -44,8 +44,6 @@ pomExtra := (
 
 scalaVersion in ThisBuild := "2.10.0-RC5"
 
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
 resolvers ++= Seq("Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
                  ,"Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases")
 
