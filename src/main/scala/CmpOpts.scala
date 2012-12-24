@@ -23,14 +23,16 @@ import Tuples._
 
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
-  // Need to handle opt(T,Function1[T => R]) implicitly convert
-  def opt[R](s: T, f: () => R): Option[R] = rawdata.find(_ == s).map(_ => f())
-  def opt[A,R](s: T, f: A => R)(implicit toTp: Tupler[A,R] = Tupler.defaultTupler[R]): Option[R] = for {
-    tl <- tailfind(s)
-    ret <- toTp(f, tl)
-  } yield ret
+  def opt[H <: HList,N <: Nat,F,R](s: T, f: F)
+      ( implicit toHLF: FnHListerAux[F,H => R], hlen: LengthAux[H,N]
+                ,toHL: FromTraversable[H], allT: LUBConstraint[H,T]
+                ,toI: ToInt[N]) = for {
+    tl <- if(toI() > 0) tailfind(s) else rawdata.find(_ == s).map(_=>Nil)
+    ahl <- toHL(tl.take(toI()))
+  } yield toHLF(f)(ahl)
 
   def tailfind(s: T): Option[Seq[T]] = {
+    // l.tailOption would be very nice here...
     val tl =
       try { rawdata.dropWhile(_ != s).tail }
       catch { case _: Throwable => Nil }
@@ -38,40 +40,6 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
     tl match {
       case Nil => None
       case ret => Some(ret)
-    }
-  }
-
-  trait Tupler[A,R] {
-    type Out = Option[R]
-    def apply(f: A => R, as: Seq[T]): Out
-  }
-
-  object Tupler {
-    implicit def productTupler[R,P <: Product](implicit p: Producer[P,R]) = new Tupler[P,R] {
-      def apply(f: P => R, as: Seq[T] ) = p(f,as)
-    }
-    def defaultTupler[R] = new Tupler[T,R] {
-      def apply(f: T => R, as: Seq[T] ) = for {
-        x <- as.headOption
-      } yield f(x)
-    }
-  }
-
-  trait Producer[P <: Product,R] {
-    type Out = Option[R]
-    def apply(f: P => R, as: Seq[T]): Out
-  }
-
-  object Producer {
-    implicit def Factory[R, P <: Product, N <: Nat, H <: HList](
-      implicit tp: TuplerAux[H, P],
-      hl: LengthAux[H, N],
-      toHL: FromTraversable[H],
-      allA: LUBConstraint[H, T],
-      toI: ToInt[N]) = new Producer[P,R] {
-      def apply(f: P => R, as: Seq[T]) = for {
-        hl <- toHL(as.take(toI()))
-      } yield f(hl.tupled)
     }
   }
 

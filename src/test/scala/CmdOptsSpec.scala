@@ -20,8 +20,8 @@ class CmdOptsSpec extends Specification {
   case class OneThing(s: String)
 
   class Conf1(x: Seq[String]) extends CmdOpts(x) {
-    lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2) )
-    lazy val person = opt("--name", (x: (String, String)) => Person(x._1, x._2) )
+    lazy val name = opt("--name", (x: String, y: String) => "%s and %s".format(x, y) )
+    lazy val person = opt("--name", (x: String, y: String) => Person(x, y) )
     lazy val onething = opt("--one", (x: String) => OneThing(x) )
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)

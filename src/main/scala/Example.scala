@@ -15,17 +15,22 @@ package io.kadai
 
 object Example extends App {
   case class OneThing(s: String)
-  object CFG extends CmdOpts(List("--name", "bob", "baz", "--one", "jobbie")) {
+  case class TwoThings(s: String, t: String)
+
+  object CFG extends CmdOpts(List("--all", "--name", "bob", "baz", "--one", "jobbie", "--two", "a", "b")) {
     // NB: lazy val effectively memoizes the result
-    lazy val name = opt("--name", (x: (String, String)) => "%s and %s".format(x._1, x._2))
+    lazy val name = opt("--name", (x: String, y:String) => "%s and %s".format(x, y))
     lazy val onearg = opt("--one", (x: String) => OneThing(x))
+    lazy val twoarg = opt("--two", (x: String, y: String) => TwoThings(x,y))
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)
     override def version = opt("--version", () => "10.1.5")
     override def usage = opt("--help", () => "Some random help text here")
   }
+
   println(CFG.name)
   println("ALL: " + CFG.all)
   println(CFG.absent)
   println(CFG.onearg)
+  println(CFG.twoarg)
 }
