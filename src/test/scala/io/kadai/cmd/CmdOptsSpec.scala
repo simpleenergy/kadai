@@ -28,7 +28,7 @@ class CmdOptsSpec extends Specification {
     lazy val absent = opt("--absent", TRUE)
     override def version = opt("--version",() => "10.1.5")
     override def usage = opt("--help",() => "Some random help text here")
-    override def handle_info() { } // Ensures that we do not exit, which is the default
+    override def handleInfo() { } // Ensures that we do not exit, which is the default
   }
 
   "Simple Tests" should {

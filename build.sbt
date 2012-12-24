@@ -16,7 +16,7 @@ organization := "io.kadai"
 
 name := "kadai"
 
-version in ThisBuild := "0.0.3"
+version in ThisBuild := "0.0.4-SNAPSHOT"
 
 licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
 
@@ -49,7 +49,6 @@ resolvers ++= Seq("Tools Snapshots"  at "http://oss.sonatype.org/content/reposit
 
 libraryDependencies in ThisBuild ++= Seq(
    "com.chuusai"  %  "shapeless_2.10.0-RC5" % "1.2.3" 
-  ,"org.scalaz"  %%  "scalaz-core"          % "7.0.0-M7"
   ,"org.specs2"  %%  "specs2"               % "1.13"       % "test"
 )
 

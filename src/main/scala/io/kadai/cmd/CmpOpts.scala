@@ -14,36 +14,32 @@
 package io.kadai
 package cmd
 
-//import scalaz.Scalaz._
 import shapeless._
 
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
   def opt[H <: HList, N <: Nat, F, R](t: T, f: F)(
-    implicit toHLF: FnHListerAux[F, H => R],
+    implicit hlisted: FnHListerAux[F, H => R],
     hlen: LengthAux[H, N],
-    toHL: FromTraversable[H],
-    size: ToInt[N]) =
+    toHList: FromTraversable[H],
+    size: ToInt[N]): Option[R] =
     for {
-      tl <- if (size() > 0) tailfind(t) else rawdata.find(_ == t).map(_ => Nil)
-      ahl <- toHL(tl.take(size()))
-    } yield toHLF(f)(ahl)
+      ts <- if (size() > 0) tailfind(t) else rawdata.find{ _ == t }.map { _ => Nil }
+      hlist <- toHList(ts.take(size()))
+    } yield hlisted(f)(hlist)
 
-  private def tailfind(s: T): Option[Seq[T]] = {
+  private def tailfind(t: T): Option[Seq[T]] = {
     // l.tailOption would be very nice here...
-    val tl =
-      try { rawdata.dropWhile(_ != s).tail }
-      catch { case _: Throwable => Nil }
-
-    tl match {
-      case Nil => None
-      case ret => Some(ret)
-    }
+    try rawdata.dropWhile(_ != t).tail
+    catch { case util.control.NonFatal(_) => Nil }
+  } match {
+    case Nil => None
+    case ret => Some(ret)
   }
 
   protected def usage: Option[String] = None
   protected def version: Option[String] = None
-  protected def handle_info() { sys.exit() }
+  protected def handleInfo() { sys.exit() }
 
   // Convenience methods, TRUE and FALSE are suprisingly common
   val TRUE = () => true
@@ -53,7 +49,7 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
   val startup = {
     val a = for { vs <- version; if !vs.isEmpty } yield println("Version: " + vs)
     val b = for { us <- usage; if !us.isEmpty } yield println("Usage: " + us)
-    val aorb = for { x <- a.orElse(b) } yield handle_info
+    val aorb = for { x <- a orElse b } yield handleInfo
     // TODO validation
   }
 }
