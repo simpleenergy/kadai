@@ -19,25 +19,21 @@ import shapeless._
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
   def opt[H <: HList, N <: Nat, F, R](t: T, f: F)(
-    implicit hlisted: FnHListerAux[F, H => R],
+    implicit hlister: FnHListerAux[F, H => R],
     length: LengthAux[H, N],
     toHList: FromTraversable[H],
     size: ToInt[N]): Option[R] =
     for {
       ts <- if (size() > 0) tailfind(t) else rawdata.find { _ == t }.map { _ => Nil }
       hlist <- toHList(ts.take(size()))
-    } yield hlisted(f)(hlist)
+    } yield hlister(f)(hlist)
 
   private def tailfind(t: T): Option[Seq[T]] = 
-    tailOption(rawdata.dropWhile(_ != t))
+    rawdata.dropWhile(_ != t).tailOption
   
   protected def usage: Option[String] = None
   protected def version: Option[String] = None
   protected def handleInfo() { sys.exit() }
-
-  // Convenience methods, TRUE and FALSE are suprisingly common
-  val TRUE = () => true
-  val FALSE = () => false
 
   // Call all the startup code
   val startup = {
@@ -46,4 +42,10 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
     val aorb = for { x <- a orElse b } yield handleInfo
     // TODO validation
   }
+}
+
+object CmdOpts {
+  // Convenience methods, TRUE and FALSE are suprisingly common
+  val TRUE = () => true
+  val FALSE = () => false
 }

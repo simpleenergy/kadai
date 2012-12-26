@@ -19,6 +19,7 @@ object Example extends App {
   case class TwoThings(s: String, t: String)
 
   object CFG extends CmdOpts(List("--all", "--name", "bob", "baz", "--one", "jobbie", "--two", "a", "b")) {
+    import CmdOpts._
     // NB: lazy val effectively memoizes the result
     lazy val name = opt("--name", (x: String, y:String) => "%s and %s".format(x, y))
     lazy val onearg = opt("--one", (x: String) => OneThing(x))
