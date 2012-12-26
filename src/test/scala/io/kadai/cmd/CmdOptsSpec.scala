@@ -17,7 +17,6 @@ package cmd
 import org.specs2.mutable.Specification
 
 class CmdOptsSpec extends Specification {
-  import CmdOpts._
 
   case class Person(given: String, family: String)
   case class OneThing(s: String)
@@ -26,8 +25,8 @@ class CmdOptsSpec extends Specification {
     lazy val name = opt("--name", (x: String, y: String) => "%s and %s".format(x, y))
     lazy val person = opt("--name", (x: String, y: String) => Person(x, y))
     lazy val onething = opt("--one", (x: String) => OneThing(x))
-    lazy val all = opt("--all", TRUE)
-    lazy val absent = opt("--absent", TRUE)
+    lazy val all = opt("--all", CmdOpts.TRUE)
+    lazy val absent = opt("--absent", CmdOpts.TRUE)
     override def version = opt("--version", () => "10.1.5")
     override def usage = opt("--help", () => "Some random help text here")
     override def handleInfo() {} // Ensures that we do not exit, which is the default
