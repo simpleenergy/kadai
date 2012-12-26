@@ -48,8 +48,8 @@ resolvers ++= Seq("Tools Snapshots"  at "http://oss.sonatype.org/content/reposit
                  ,"Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases")
 
 libraryDependencies in ThisBuild ++= Seq(
-   "com.chuusai"  %  "shapeless_2.10.0-RC5" % "1.2.3" 
-  ,"org.specs2"  %%  "specs2"               % "1.13"       % "test"
+   "com.chuusai"  %%  "shapeless" % "1.2.3" 
+  ,"org.specs2"   %%  "specs2"    % "1.13"       % "test"
 )
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature", "-language:_")
