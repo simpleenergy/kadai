@@ -18,7 +18,7 @@ package object cmd {
        notEmpty map { r => r.head -> r.tail }
   }
 
-  // somehow we need to attempt to capture the IsTraversableLike's head type
+  // somehow we need to capture IsTraversableLike's head type
   //implicit def ToTailOption[A, R<: GenTraversableLike[_, R]](r: R)(implicit fr: IsTraversableLike[R]): TailOption[fr.A, R] =
   //  new TailOption(r)
 }
