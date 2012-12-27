@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-name := "kadai-log"
+name := "kadai-logging"
 
-libraryDependencies in ThisBuild ++= Seq()
+libraryDependencies in ThisBuild ++= Seq(
+  "org.apache.logging.log4j"          % "log4j-core"         % "2.0-beta3"
+)

@@ -18,6 +18,10 @@ package object kadai {
        notEmpty map { r => r.head -> r.tail }
   }
 
+  implicit class SideEffectReturningSyntax[A](val a: A) extends AnyVal {
+    def ~~(effect: A => Any): A = { effect(a) ; a }
+  }
+  
   // somehow we need to capture IsTraversableLike's head type
   //implicit def ToTailOption[A, R<: GenTraversableLike[_, R]](r: R)(implicit fr: IsTraversableLike[R]): TailOption[fr.A, R] =
   //  new TailOption(r)
