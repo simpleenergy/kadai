@@ -1,9 +1,9 @@
-package io.kadai
+package io
 
-import collection.GenTraversableLike
-import collection.generic.IsTraversableLike
+package object kadai {
 
-package object cmd {
+  import collection.GenTraversableLike
+  import collection.generic.IsTraversableLike
 
   implicit class TraversableOptionalSyntax[Repr <: GenTraversableLike[_, Repr]](val rep: Repr) extends AnyVal {
     //type A = ???

@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-organization := "io.kadai"
+organization in ThisBuild := "io.kadai"
 
 name := "kadai"
 
 version in ThisBuild := "0.0.4-SNAPSHOT"
 
-licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
+scalaVersion in ThisBuild := "2.10.0"
 
-homepage := Some(url("https://bitbucket.org/atlassian/kadai"))
+licenses in ThisBuild := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
 
-pomExtra := (
+homepage in ThisBuild := Some(url("https://bitbucket.org/atlassian/kadai"))
+
+pomExtra in ThisBuild := (
     <scm>
         <url>git@bitbucket.org:atlassian/kadai.git</url>
         <connection>scm:git:git@bitbucket.org:atlassian/kadai.git</connection>
@@ -42,14 +44,13 @@ pomExtra := (
     </distributionManagement>
 )
 
-scalaVersion in ThisBuild := "2.10.0"
-
-resolvers ++= Seq("Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
-                 ,"Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases")
+resolvers in ThisBuild ++= Seq(
+  "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
+, "Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases"
+)
 
 libraryDependencies in ThisBuild ++= Seq(
-   "com.chuusai"  %%  "shapeless" % "1.2.3" 
-  ,"org.specs2"   %%  "specs2"    % "1.13"       % "test"
+  "org.specs2"   %%  "specs2"    % "1.13"       % "test"
 )
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature", "-language:_")
@@ -58,3 +59,11 @@ mappings in (Compile, packageBin) ++= Seq(
    file("LICENSE") -> "META-INF/LICENSE"
   ,file("NOTICE")  -> "META-INF/NOTICE"
 )
+
+libraryDependencies in ThisBuild ++= Seq(
+  "org.specs2"                        %% "specs2"      % "1.13" % "test"
+)
+
+EclipseKeys.withSource in ThisBuild := true
+
+EclipseKeys.createSrc in ThisBuild := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
