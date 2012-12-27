@@ -17,6 +17,8 @@ package io.kadai
 package cmdopts
 
 import org.specs2.mutable.Specification
+import scalaz._
+import Scalaz._
 
 class CmdOptsSpec extends Specification {
 
@@ -32,6 +34,9 @@ class CmdOptsSpec extends Specification {
     override def version = opt("--version", () => "10.1.5")
     override def usage = opt("--help", () => "Some random help text here")
     override def handleInfo() {} // Ensures that we do not exit, which is the default
+    override def validate = check(name,"Name not present") &&
+                            check(all,"All option is required")
+    override def handleErrors( xs: NonEmptyList[String] ) {}
   }
 
   "Simple Tests" should {
@@ -72,6 +77,16 @@ class CmdOptsSpec extends Specification {
       val c = new Conf1(List("--name", "bar"))
       c.name must be equalTo None
       c.person must be equalTo None
+    }
+
+    "validation success" in {
+      val c = new Conf1(List("--name", "bar", "baz", "--all"))
+      c.validate.isSuccess must be equalTo true
+    }
+
+    "validation failure" in {
+      val c = new Conf1(List("--name", "bar", "baz"))
+      c.validate.isFailure must be equalTo true
     }
   }
 

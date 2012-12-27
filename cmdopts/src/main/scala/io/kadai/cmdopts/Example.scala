@@ -16,6 +16,9 @@
 package io.kadai
 package cmdopts
 
+import scalaz._
+import Scalaz._
+
 object Example extends App {
   case class OneThing(s: String)
   case class TwoThings(s: String, t: String)
@@ -28,8 +31,16 @@ object Example extends App {
     lazy val twoarg = opt("--two", (x: String, y: String) => TwoThings(x,y))
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)
+
+    override def validate = check(name,"Name not present") &&
+                            check(absent,"Absent option is required") &&
+                            check(all,"All option is required")
+//    override def validate = check(absent,"Name not present")
+
     override def version = opt("--version", () => "10.1.5")
     override def usage = opt("--help", () => "Some random help text here")
+    // Null implementation will stop the default exit behaviour
+    override def handleInfo() { }
   }
 
   println(CFG.name)
@@ -37,4 +48,5 @@ object Example extends App {
   println(CFG.absent)
   println(CFG.onearg)
   println(CFG.twoarg)
+  println(CFG.validate)
 }
