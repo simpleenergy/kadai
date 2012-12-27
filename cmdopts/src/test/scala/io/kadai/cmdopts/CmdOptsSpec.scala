@@ -1,18 +1,16 @@
-/* 
- * Copyright 2012 Atlassian PTY LTD
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2012 Atlassian PTY LTD
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package io.kadai
 package cmdopts
 
@@ -28,7 +26,6 @@ class CmdOptsSpec extends Specification {
   class Conf1(x: Seq[String]) extends CmdOpts(x) {
     lazy val name = opt("--name", (x: String, y: String) => "%s and %s".format(x, y))
     lazy val person = opt("--name", (x: String, y: String) => Person(x, y))
-    lazy val badperson = opt("--name", (x: String, y: String) => if( x == "bar" ) Person(x,y) else throw new IllegalArgumentException("bad firstname") )
     lazy val onething = opt("--one", (x: String) => OneThing(x))
     lazy val all = opt("--all", CmdOpts.TRUE)
     lazy val absent = opt("--absent", CmdOpts.TRUE)
@@ -78,14 +75,6 @@ class CmdOptsSpec extends Specification {
       val c = new Conf1(List("--name", "bar"))
       c.name must be equalTo None
       c.person must be equalTo None
-    }
-
-    "badname" in {
-      val c = new Conf1(List("--name", "bubba", "man"))
-      c.badperson must be equalTo None
-      c.person must be equalTo Some(Person("bubba","man"))
-      val d = new Conf1(List("--name", "bar", "man"))
-      d.badperson must be equalTo Some(Person("bar","man"))
     }
 
     "validation success" in {
