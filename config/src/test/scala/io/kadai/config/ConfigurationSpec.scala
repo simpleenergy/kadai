@@ -85,7 +85,7 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
     val name = "src/test/resources/test.conf"
     val mvn = new java.io.File(name)
     if (mvn.isFile()) mvn
-    else new java.io.File("soke-core/" + name) // sbt runs in parent
+    else new java.io.File("config/" + name) // sbt runs in parent
   }
   "Loading from file" should {
     "not fail if the file is existing" in {
