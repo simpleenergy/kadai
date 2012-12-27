@@ -19,6 +19,7 @@ package cmdopts
 import shapeless._
 import scalaz._
 import Scalaz._
+import util.control.Exception.nonFatalCatch
 
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
@@ -29,8 +30,9 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
     size: ToInt[N]): Option[R] =
     for {
       ts <- if (size() > 0) tailfind(t) else rawdata.find { _ == t }.map { _ => Nil }
-      hlist <- toHList(ts.take(size()))
-    } yield hlister(f)(hlist)
+      hl <- toHList(ts.take(size()))
+      op <- nonFatalCatch.opt { hlister(f)(hl) }
+    } yield op
 
   implicit def check[R](xopt: Option[R], err: String): ValidationNEL[String,R] =
     xopt.map(_.successNel[String]).getOrElse(err.failNel[R])

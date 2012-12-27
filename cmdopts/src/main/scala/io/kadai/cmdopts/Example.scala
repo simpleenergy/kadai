@@ -32,9 +32,10 @@ object Example extends App {
     lazy val all = opt("--all", TRUE)
     lazy val absent = opt("--absent", TRUE)
 
-    override def validate = check(name,"Name not present") &&
-                            check(absent,"Absent option is required") &&
-                            check(all,"All option is required")
+    override def validate = 
+      check(name,"Name not present") &&
+      check(absent,"Absent option is required") &&
+      check(all,"All option is required")
 //    override def validate = check(absent,"Name not present")
 
     override def version = opt("--version", () => "10.1.5")
