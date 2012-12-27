@@ -28,7 +28,8 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
     for {
       ts <- if (size() > 0) tailfind(t) else rawdata.find { _ == t }.map { _ => Nil }
       hlist <- toHList(ts.take(size()))
-    } yield hlister(f)(hlist)
+      v <- try { hlister(f)(hlist).some } catch { case _ : Throwable => None }
+    } yield v
 
   implicit def check[R](xopt: Option[R], err: String): ValidationNEL[String,R] =
     xopt.map(_.successNel[String]).getOrElse(err.failNel[R])
