@@ -20,8 +20,3 @@ libraryDependencies in ThisBuild ++= Seq(
 , "org.scalaz"                   %% "scalaz-effect"      % "7.0.0-M7"             % "provided"
 , "org.scala-tools.time"          % "scala-time"         % "2.9.1-atlassian-0.4"  % "provided"
 )
-
-mappings in (Compile, packageBin) ++= Seq(
-   file("LICENSE") -> "META-INF/LICENSE"
-  ,file("NOTICE")  -> "META-INF/NOTICE"
-)
