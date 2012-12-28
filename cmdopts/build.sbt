@@ -15,3 +15,8 @@
 name := "kadai-cmdopts"
 
 libraryDependencies in ThisBuild ++= Seq()
+
+mappings in (Compile, packageBin) ++= Seq(
+   file("LICENSE") -> "META-INF/LICENSE"
+  ,file("NOTICE")  -> "META-INF/NOTICE"
+)

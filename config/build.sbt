@@ -17,3 +17,8 @@ name := "kadai-config"
 libraryDependencies in ThisBuild ++= Seq(
   "com.typesafe"                      % "config"             % "1.0.0"  % "provided"
 )
+
+mappings in (Compile, packageBin) ++= Seq(
+   file("LICENSE") -> "META-INF/LICENSE"
+  ,file("NOTICE")  -> "META-INF/NOTICE"
+)

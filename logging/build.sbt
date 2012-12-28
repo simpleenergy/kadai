@@ -17,3 +17,8 @@ name := "kadai-logging"
 libraryDependencies in ThisBuild ++= Seq(
   "org.apache.logging.log4j"  % "log4j-core"  % "2.0-beta3"  % "provided"
 )
+
+mappings in (Compile, packageBin) ++= Seq(
+   file("LICENSE") -> "META-INF/LICENSE"
+  ,file("NOTICE")  -> "META-INF/NOTICE"
+)
