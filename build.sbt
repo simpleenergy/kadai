@@ -74,3 +74,9 @@ EclipseKeys.withSource in ThisBuild := true
 EclipseKeys.createSrc in ThisBuild := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
 
 assembleArtifact in packageScala := false
+
+artifact in (Compile, assembly) ~= { art =>
+  art.copy(`classifier` = Some("assembly"))
+}
+
+addArtifact(artifact in (Compile, assembly), assembly)
