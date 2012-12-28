@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import AssemblyKeys._
+
+assemblySettings
+
 organization in ThisBuild := "io.kadai"
 
 name := "kadai"
@@ -68,3 +72,5 @@ mappings in (Compile, packageBin) ++= Seq(
 EclipseKeys.withSource in ThisBuild := true
 
 EclipseKeys.createSrc in ThisBuild := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+
+assembleArtifact in packageScala := false
