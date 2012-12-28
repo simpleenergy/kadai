@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-name := "kadai-project"
+name := "kadai"
 
 description := "bootstrap tools for a Scala project"
 

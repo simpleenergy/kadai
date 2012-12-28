@@ -1,7 +1,7 @@
 import sbt._, Keys._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "0.0.4-M1"
+  lazy val projectVersion = "0.0.4-M2"
 
   lazy val standardSettings = Defaults.defaultSettings ++ List[Project.Setting[_]] (
     organization := "io.kadai"
