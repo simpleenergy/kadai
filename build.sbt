@@ -47,6 +47,11 @@ pomExtra in ThisBuild := (
 resolvers in ThisBuild ++= Seq(
   "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
 , "Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases"
+, "atlassian-public" at "https://m2proxy.atlassian.com/content/groups/atlassian-public/"
+, "atlassian-internal" at "https://m2proxy.atlassian.com/content/groups/internal/"
+// Contegix, m2proxy.atlassian.com is borked, m2proxy-int.private.atlassian.com works
+, "atlassian-public-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/atlassian-public/"
+, "atlassian-internal-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/internal/"
 )
 
 libraryDependencies in ThisBuild ++= Seq(
@@ -58,10 +63,6 @@ scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature", "-l
 mappings in (Compile, packageBin) ++= Seq(
    file("LICENSE") -> "META-INF/LICENSE"
   ,file("NOTICE")  -> "META-INF/NOTICE"
-)
-
-libraryDependencies in ThisBuild ++= Seq(
-  "org.specs2"                        %% "specs2"      % "1.13" % "test"
 )
 
 EclipseKeys.withSource in ThisBuild := true
