@@ -34,25 +34,38 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
       op <- nonFatalCatch.opt { hlister(f)(hl) }
     } yield op
 
-  implicit def check[R](xopt: Option[R], err: String): ValidationNEL[String,R] =
+  def check[R](xopt: Option[R], err: String): ValidationNEL[String, R] =
     xopt.map(_.successNel[String]).getOrElse(err.failNel[R])
 
-  private def tailfind(t: T): Option[Seq[T]] =
-    rawdata.dropWhile(_ != t).tailOption
+  protected def usage: Option[String] =
+    None
 
-  protected def usage: Option[String] = None
-  protected def version: Option[String] = None
-  protected def handleInfo() { sys.exit() }
-  protected def validate: ValidationNEL[String,_] = ().successNel[String]
-  protected def handleErrors( xs: NonEmptyList[String] ) = { xs.foreach(println) }
+  protected def version: Option[String] =
+    None
+
+  protected def validate: ValidationNEL[String, _] =
+    ().successNel[String]
+
+  protected def handleInfo() {
+    sys.exit()
+  }
+
+  protected def handleErrors(xs: NonEmptyList[String]) {
+    xs.foreach(println)
+  }
 
   // Call all the startup code
   val startup = {
-    val valid = validate.fold( es => handleErrors(es).some , _ => None )
+    val valid = validate.fold(handleErrors(_).some, _ => None)
     val ver = for { vs <- version; if !vs.isEmpty } yield println("Version: " + vs)
     val use = for { us <- usage; if !us.isEmpty } yield println("Usage: " + us)
-    for { x <- valid orElse ver orElse use } yield handleInfo
+    for {
+      _ <- valid orElse ver orElse use
+    } yield handleInfo
   }
+
+  private def tailfind(t: T): Option[Seq[T]] =
+    rawdata.dropWhile(_ != t).tailOption
 }
 
 object CmdOpts {
