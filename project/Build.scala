@@ -7,5 +7,5 @@ object ThingBuild extends Build {
   lazy val cmdopts = Project(id = "cmdopts", base = file("cmdopts")).dependsOn(core)
   lazy val config = Project(id = "config", base = file("config")).dependsOn(core, logging)
 
-  lazy val all = Project(id = "all", base = file(".")) aggregate (core, config, logging, cmdopts)
+  lazy val all = Project(id = "all", base = file(".")) aggregate (core, config, logging, cmdopts) dependsOn (core, config, logging, cmdopts)
 }
