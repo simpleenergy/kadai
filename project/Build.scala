@@ -1,9 +1,11 @@
 import sbt._, Keys._
 
 object KadaiBuild extends Build {
+  lazy val projectVersion = "0.0.4-M1"
+
   lazy val standardSettings = Defaults.defaultSettings ++ List[Project.Setting[_]] (
     organization := "io.kadai"
-  , version := "0.0.4-SNAPSHOT"
+  , version := projectVersion
   , licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
   , homepage := Some(url("https://bitbucket.org/atlassian/kadai"))
   , pomExtra := (
