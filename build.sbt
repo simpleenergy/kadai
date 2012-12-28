@@ -16,11 +16,9 @@ import AssemblyKeys._
 
 assemblySettings
 
-name := "kadai"
+name := "kadai-project"
 
-libraryDependencies in ThisBuild ++= Seq(
-  "org.specs2"   %%  "specs2"    % "1.13"       % "test"
-)
+description := "bootstrap tools for a Scala project"
 
 EclipseKeys.withSource in ThisBuild := true
 

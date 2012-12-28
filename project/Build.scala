@@ -40,6 +40,7 @@ object KadaiBuild extends Build {
       file("LICENSE") -> "META-INF/LICENSE"
     , file("NOTICE")  -> "META-INF/NOTICE"
     )
+  , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
   )
 
   lazy val core = Project(id = "core"
