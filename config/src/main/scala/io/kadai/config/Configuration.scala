@@ -17,34 +17,35 @@ package io.kadai
 package config
 
 import com.typesafe.config.{ Config, ConfigFactory, ConfigObject, ConfigValue, ConfigResolveOptions, ConfigParseOptions }
-import java.io.File
+import java.io.{ File, Serializable }
+import log.Logging
 import scalaz.syntax.id._
-import org.joda.time.DateTime
+import util.control.{ Exception, NonFatal }
 
 /** Simple user-friendly wrapper around Config.
-  *
-  * Provides a single type-safe apply method for getting values out from the configuration.
-  *
-  * Usage:
-  * {{{
-  * val config = Configuration.load("filename.conf").get[Configuration]("objectName")
-  * val intThing = config[Int]("intPropertyName")
-  * val strThing = config[String]("stringPropertyName")
-  * }}}
-  * Note that formatting or other problems will throw exceptions.
-  *
-  * You can also optionally find correct config items or validate and check their correctness (with Either):
-  * {{{
-  * val intOption:Option[Int] = config.option[Int]("intPropertyName")
-  * val strThing: Either[Throwable, String] = config.valid[String]("stringPropertyName")
-  * }}}
-  *
-  * The Accessor type-classes implement the glue to get the specific type configuration item.
-  *
-  * Details on the underlying configuration file specification can be found here:
-  * https://github.com/typesafehub/config/blob/master/HOCON.md
-  */
-object Configuration {
+ *
+ *  Provides a single type-safe apply method for getting values out from the configuration.
+ *
+ *  Usage:
+ *  {{{
+ *  val config = Configuration.load("filename.conf").get[Configuration]("objectName")
+ *  val intThing = config[Int]("intPropertyName")
+ *  val strThing = config[String]("stringPropertyName")
+ *  }}}
+ *  Note that formatting or other problems will throw exceptions.
+ *
+ *  You can also optionally find correct config items or validate and check their correctness (with Either):
+ *  {{{
+ *  val intOption:Option[Int] = config.option[Int]("intPropertyName")
+ *  val strThing: Either[Throwable, String] = config.valid[String]("stringPropertyName")
+ *  }}}
+ *
+ *  The Accessor type-classes implement the glue to get the specific type configuration item.
+ *
+ *  Details on the underlying configuration file specification can be found here:
+ *  https://github.com/typesafehub/config/blob/master/HOCON.md
+ */
+trait ConfigurationInstances {
   import scala.collection.JavaConverters._
 
   val failIfMissing =
@@ -94,6 +95,8 @@ object Configuration {
   implicit object BooleanAccessor extends Accessor[Boolean] {
     def apply(c: Config, s: String) = c getBoolean s
   }
+
+  import org.joda.time.DateTime
   implicit object DateTimeAccessor extends Accessor[DateTime] {
     def apply(c: Config, s: String) = new DateTime(c getMilliseconds s)
   }
@@ -105,6 +108,9 @@ object Configuration {
   }
   implicit object ConfigurationAccessor extends Accessor[Configuration] {
     def apply(c: Config, s: String) = Configuration(c getConfig s)
+  }
+  implicit object ConfigObjectAccessor extends Accessor[ConfigObject] {
+    def apply(c: Config, s: String) = c getObject s
   }
   implicit def ClassAccessor[T: Manifest] = new Accessor[Class[T]] {
     def apply(c: Config, s: String): Class[T] =
@@ -126,15 +132,18 @@ object Configuration {
 
   // utils
 
-  private[Configuration] val catcher = util.control.Exception.allCatch
+  private[config] val catcher = Exception.nonFatalCatch
 
   private[kadai] class SerializationProxy(s: String) extends Serializable {
     def readResolve: Object = Configuration from s
   }
 }
 
-class Configuration private[Configuration] (val c: Config) extends log.Logging with java.io.Serializable {
+object Configuration extends ConfigurationInstances
+
+class Configuration protected[config] (val c: Config) extends Logging with Serializable {
   import Configuration._
+  import Logging._
 
   def apply[A: Accessor](s: String): A =
     implicitly[Accessor[A]].apply(c, s)
@@ -152,8 +161,15 @@ class Configuration private[Configuration] (val c: Config) extends log.Logging w
       implicitly[Accessor[A]].apply(c, s)
     }
 
+  /*def keys: Iterable[String] = {
+    import collection.JavaConverters._
+    c.entrySet.asScala.map { _.getKey }
+  }*/
+
+  // why is this here?
+  @deprecated("0", "oh no!")
   def config(s: String): Config =
-    implicitly[Accessor[Config]].apply(c, s)
+    apply[Config](s)
 
   def toConfig: Config = c
 
@@ -174,8 +190,7 @@ class Configuration private[Configuration] (val c: Config) extends log.Logging w
   private def access[A](s: String)(implicit accessor: Accessor[A]): A =
     try accessor.apply(c, s)
     catch {
-      case util.control.NonFatal(e) =>
-        import scalaz._, Scalaz._
+      case NonFatal(e) =>
         error(c.toString + "")
         throw e
     }

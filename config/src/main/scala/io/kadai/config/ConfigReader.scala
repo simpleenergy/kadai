@@ -15,8 +15,10 @@
  */
 package io.kadai.config
 
+/** ConfigReader is a Reader monad specialized to the Configuration class */
+
 /** Sugar for creating ConfigReaders */
-object ConfigReader {
+trait ConfigReaderInstances {
   /** pass in the sub-context name */
   def apply[A](s: String)(f: Configuration => A): ConfigReader[A] =
     new ConfigReader(config => f(config[Configuration](s)))
@@ -34,6 +36,8 @@ object ConfigReader {
     def map[A, B](c: ConfigReader[A])(f: A => B) = c map f
   }
 }
+
+object ConfigReader extends ConfigReaderInstances
 
 case class ConfigReader[A](private val f: Configuration => A) extends (Configuration => A) {
   def apply(c: Configuration): A = f(c)
