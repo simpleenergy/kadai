@@ -47,8 +47,8 @@ trait Logger {
   protected def trace[A: Show](s: => A): Unit
 }
 
-object Logging extends std.AllInstances {
-  private def apply(cls: Class[_]) = org.apache.logging.log4j.LogManager.getLogger(cls)
+trait LoggingInstances extends std.AllInstances {
+  private[log] def apply(cls: Class[_]) = org.apache.logging.log4j.LogManager.getLogger(cls)
 
   implicit def ShowThrowable[T <: Throwable] = new Show[T] {
     override def shows(t: T) =
@@ -62,6 +62,8 @@ object Logging extends std.AllInstances {
   }
 }
 
+object Logging extends LoggingInstances
+
 trait Logging extends Logger {
   import Logging._
   /** allow syntax: log info "message" */
@@ -69,11 +71,11 @@ trait Logging extends Logger {
 
   private def show[A: Show](msg: => A) = implicitly[Show[A]].shows(msg)
 
-  override def error[A: Show](msg: => A) = log.error { show(msg) }
-  override def warn[A: Show](msg: => A) = log.warn { show(msg) }
-  override def info[A: Show](msg: => A) = log.info { show(msg) }
-  override def debug[A: Show](msg: => A) = log.debug { show(msg) }
-  override def trace[A: Show](msg: => A) = log.trace { show(msg) }
+  override protected def error[A: Show](msg: => A) = log.error { show(msg) }
+  override protected def warn[A: Show](msg: => A) = log.warn { show(msg) }
+  override protected def info[A: Show](msg: => A) = log.info { show(msg) }
+  override protected def debug[A: Show](msg: => A) = log.debug { show(msg) }
+  override protected def trace[A: Show](msg: => A) = log.trace { show(msg) }
 
   def withLog[A](s: String)(f: => A): A = {
     info(s)
