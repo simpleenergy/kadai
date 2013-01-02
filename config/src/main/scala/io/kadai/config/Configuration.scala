@@ -161,10 +161,10 @@ class Configuration protected[config] (val c: Config) extends Logging with Seria
       implicitly[Accessor[A]].apply(c, s)
     }
 
-  /*def keys: Iterable[String] = {
+  def keys: List[String] = {
     import collection.JavaConverters._
-    c.entrySet.asScala.map { _.getKey }
-  }*/
+    c.entrySet.asScala map { _.getKey } toList
+  }
 
   // why is this here?
   @deprecated("0", "oh no!")
