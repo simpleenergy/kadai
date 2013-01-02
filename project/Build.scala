@@ -15,7 +15,9 @@
 import sbt._, Keys._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "0.0.4-M2"
+  lazy val projectVersion = "0.0.4-M3-SNAPSHOT"
+
+  lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
   lazy val standardSettings = Defaults.defaultSettings ++ List[Project.Setting[_]] (
     organization := "io.kadai"
@@ -57,6 +59,7 @@ object KadaiBuild extends Build {
     , file("NOTICE")  -> "META-INF/NOTICE"
     )
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
+  , publishTo := mavenLocal
   )
 
   lazy val core = Project(id = "core"
