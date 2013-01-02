@@ -20,8 +20,11 @@ object AtlassianPrivate extends Plugin {
     Seq(
       publishTo <<= version { (v: String) =>
         val nexus = "https://maven.atlassian.com/"
-
-        if (v.trim.endsWith("SNAPSHOT"))
+        val vers = v.trim
+        
+        if (vers.endsWith("LOCAL"))
+          Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+        else if (vers.endsWith("SNAPSHOT"))
           Some("snapshots" at nexus + "private-snapshot")
         else
           Some("releases"  at nexus + "private")
