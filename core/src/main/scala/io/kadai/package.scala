@@ -20,7 +20,13 @@ package object kadai {
   import collection.GenTraversableLike
   import collection.generic.IsTraversableLike
 
-  class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr]) {
+  implicit class NotEmptySyntax[Repr <: GenTraversableLike[_, Repr]](rep: Repr)(implicit val fr: IsTraversableLike[Repr]) {
+
+    def notEmpty: Option[Repr] =
+      if (rep.isEmpty) None else Some(rep)
+  }
+  
+  class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr])(implicit val fr: IsTraversableLike[Repr]) {
     def tailOption: Option[Repr] =
       if (rep.isEmpty) None
       else Some(rep.tail)
