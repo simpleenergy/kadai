@@ -20,29 +20,21 @@ package object kadai {
   import collection.GenTraversableLike
   import collection.generic.IsTraversableLike
 
-  class TraversableOptionalSyntax[Repr](r: Repr)(implicit val fr: IsTraversableLike[Repr]) {
-    type A = fr.A
-
-    private def rep = fr conversion r
-
-    def notEmpty: Option[Repr] =
-      if (rep.isEmpty) None else Some(r)
-
+  class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr]) {
     def tailOption: Option[Repr] =
-      notEmpty map { r => fr.conversion(r).tail }
+      if (rep.isEmpty) None
+      else Some(rep.tail)
 
     def headTailOption: Option[(A, Repr)] =
-      notEmpty map { r =>
-        val rep = fr.conversion(r)
-        rep.head -> rep.tail
-      }
+      if (rep.isEmpty) None
+      else Some(rep.head -> rep.tail)
   }
+
+  implicit def TraversableOptionalSyntaxPimp[A, Repr](rep: Repr)(implicit fr: IsTraversableLike[Repr]): TraversableOptionalSyntax[fr.A, Repr] = 
+    new TraversableOptionalSyntax(fr conversion rep)
+
 
   implicit class SideEffectReturningSyntax[A](val a: A) extends AnyVal {
     def ~~(effect: A => Any): A = { effect(a); a }
   }
-
-  // somehow we need to capture IsTraversableLike's head type
-  //implicit def ToTailOption[A, R<: GenTraversableLike[_, R]](r: R)(implicit fr: IsTraversableLike[R]): TailOption[fr.A, R] =
-  //  new TailOption(r)
 }
