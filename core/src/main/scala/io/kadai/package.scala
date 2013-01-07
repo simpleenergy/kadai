@@ -19,21 +19,19 @@ package object kadai {
 
   import collection.GenTraversableLike
   import collection.generic.IsTraversableLike
+  import scalaz._, Scalaz._
 
-  implicit class NotEmptySyntax[Repr <: GenTraversableLike[_, Repr]](rep: Repr)(implicit val fr: IsTraversableLike[Repr]) {
-
+  implicit class NotEmptySyntax[A, Repr: IsTraversableLike](rep: Repr) {
     def notEmpty: Option[Repr] =
-      if (rep.isEmpty) None else Some(rep)
+      implicitly[IsTraversableLike[Repr]].conversion(rep).isEmpty ? none[Repr] | rep.some
   }
   
-  class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr])(implicit val fr: IsTraversableLike[Repr]) {
+  class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr]) {
     def tailOption: Option[Repr] =
-      if (rep.isEmpty) None
-      else Some(rep.tail)
+      rep.isEmpty ? none[Repr] | rep.tail.some
 
     def headTailOption: Option[(A, Repr)] =
-      if (rep.isEmpty) None
-      else Some(rep.head -> rep.tail)
+      rep.isEmpty ? none[(A, Repr)] | (rep.head -> rep.tail).some
   }
 
   implicit def TraversableOptionalSyntaxPimp[A, Repr](rep: Repr)(implicit fr: IsTraversableLike[Repr]): TraversableOptionalSyntax[fr.A, Repr] = 
