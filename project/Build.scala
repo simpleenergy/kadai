@@ -58,6 +58,7 @@ object KadaiBuild extends Build {
     , file("NOTICE")  -> "META-INF/NOTICE"
     )
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
+  , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   )
 
   lazy val core = Project(id = "core"
