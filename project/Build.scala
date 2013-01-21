@@ -16,7 +16,9 @@ import sbt._, Keys._
 import aether._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "0.0.4-SNAPSHOT"
+  lazy val projectVersion = "0.0.4-M3"
+
+  lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
   lazy val standardSettings = Defaults.defaultSettings ++ Aether.aetherSettings ++ Aether.aetherPublishSettings ++ List[Project.Setting[_]] (
     organization := "io.kadai"
@@ -47,8 +49,8 @@ object KadaiBuild extends Build {
   , resolvers ++= Seq(
       "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
     , "Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases"
-    , "atlassian-public" at "https://m2proxy.atlassian.com/content/groups/atlassian-public/"
-    , "atlassian-internal" at "https://m2proxy.atlassian.com/content/groups/internal/"
+    , "atlassian-public" at "https://maven.atlassian.com/content/groups/atlassian-public/"
+    , "atlassian-internal" at "https://maven.atlassian.com/content/groups/internal/"
       // Contegix, m2proxy.atlassian.com is borked, m2proxy-int.private.atlassian.com works
     , "atlassian-public-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/atlassian-public/"
     , "atlassian-internal-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/internal/"
@@ -59,6 +61,7 @@ object KadaiBuild extends Build {
     )
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
   , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+  , publishTo := mavenLocal
   )
 
   lazy val core = Project(id = "core"

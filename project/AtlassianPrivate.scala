@@ -16,15 +16,18 @@ import sbt._
 import Keys._
 
 object AtlassianPrivate extends Plugin {
+  val nexus = "https://maven.atlassian.com/"
+  lazy val release = Some("releases" at nexus + "private")
+  lazy val snapshots = Some("snapshots" at nexus + "private-snapshot")
+  lazy val local = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+
   override def settings = 
     Seq(
       publishTo <<= version { (v: String) =>
-        val nexus = "https://maven.atlassian.com/"
-
-        if (v.trim.endsWith("SNAPSHOT"))
-          Some("snapshots" at nexus + "private-snapshot")
+        if (v.trim endsWith "SNAPSHOT")
+          local
         else
-          Some("releases"  at nexus + "private")
+          release
       }
     )
 }
