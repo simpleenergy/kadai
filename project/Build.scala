@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import sbt._, Keys._
+import aether._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "0.0.4-M3-SNAPSHOT"
+  lazy val projectVersion = "0.0.4-SNAPSHOT"
 
-  lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
-
-  lazy val standardSettings = Defaults.defaultSettings ++ List[Project.Setting[_]] (
+  lazy val standardSettings = Defaults.defaultSettings ++ Aether.aetherSettings ++ Aether.aetherPublishSettings ++ List[Project.Setting[_]] (
     organization := "io.kadai"
   , version := projectVersion
   , licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
@@ -59,7 +58,7 @@ object KadaiBuild extends Build {
     , file("NOTICE")  -> "META-INF/NOTICE"
     )
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
-  , publishTo := mavenLocal
+  , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   )
 
   lazy val core = Project(id = "core"
