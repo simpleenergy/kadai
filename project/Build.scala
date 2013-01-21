@@ -49,8 +49,8 @@ object KadaiBuild extends Build {
   , resolvers ++= Seq(
       "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
     , "Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases"
-    , "atlassian-public" at "https://m2proxy.atlassian.com/content/groups/atlassian-public/"
-    , "atlassian-internal" at "https://m2proxy.atlassian.com/content/groups/internal/"
+    , "atlassian-public" at "https://maven.atlassian.com/content/groups/atlassian-public/"
+    , "atlassian-internal" at "https://maven.atlassian.com/content/groups/internal/"
       // Contegix, m2proxy.atlassian.com is borked, m2proxy-int.private.atlassian.com works
     , "atlassian-public-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/atlassian-public/"
     , "atlassian-internal-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/internal/"

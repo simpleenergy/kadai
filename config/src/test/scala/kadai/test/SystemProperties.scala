@@ -1,4 +1,4 @@
-package io.kadai
+package kadai
 package test
 
 import org.specs2.mutable.Around

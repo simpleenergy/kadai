@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.kadai
+package kadai
 package config
 
 import scalaz.syntax.id._

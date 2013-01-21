@@ -1,4 +1,4 @@
-package io.kadai.log.log4j
+package kadai.log.log4j
 
 import java.net.InetAddress;
 
