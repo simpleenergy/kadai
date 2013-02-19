@@ -16,37 +16,43 @@
 package kadai
 package config
 
-import com.typesafe.config.{ Config, ConfigFactory, ConfigObject, ConfigValue, ConfigResolveOptions, ConfigParseOptions }
 import java.io.{ File, Serializable }
+
+import scala.collection.JavaConverters.{ asScalaBufferConverter, asScalaSetConverter, mapAsJavaMapConverter }
+import scala.util.control.{ Exception, NonFatal }
+
+import org.joda.time.DateTime
+
+import com.typesafe.config.{ Config, ConfigFactory, ConfigObject, ConfigParseOptions, ConfigResolveOptions }
+
 import log.Logging
-import scalaz.syntax.id._
-import util.control.{ Exception, NonFatal }
+import log.Logging.stringInstance
+import scalaz.syntax.id.ToIdOps
 
 /** Simple user-friendly wrapper around Config.
- *
- *  Provides a single type-safe apply method for getting values out from the configuration.
- *
- *  Usage:
- *  {{{
- *  val config = Configuration.load("filename.conf").get[Configuration]("objectName")
- *  val intThing = config[Int]("intPropertyName")
- *  val strThing = config[String]("stringPropertyName")
- *  }}}
- *  Note that formatting or other problems will throw exceptions.
- *
- *  You can also optionally find correct config items or validate and check their correctness (with Either):
- *  {{{
- *  val intOption:Option[Int] = config.option[Int]("intPropertyName")
- *  val strThing: Either[Throwable, String] = config.valid[String]("stringPropertyName")
- *  }}}
- *
- *  The Accessor type-classes implement the glue to get the specific type configuration item.
- *
- *  Details on the underlying configuration file specification can be found here:
- *  https://github.com/typesafehub/config/blob/master/HOCON.md
- */
+  *
+  * Provides a single type-safe apply method for getting values out from the configuration.
+  *
+  * Usage:
+  * {{{
+  * val config = Configuration.load("filename.conf").get[Configuration]("objectName")
+  * val intThing = config[Int]("intPropertyName")
+  * val strThing = config[String]("stringPropertyName")
+  * }}}
+  * Note that formatting or other problems will throw exceptions.
+  *
+  * You can also optionally find correct config items or validate and check their correctness (with Either):
+  * {{{
+  * val intOption:Option[Int] = config.option[Int]("intPropertyName")
+  * val strThing: Either[Throwable, String] = config.valid[String]("stringPropertyName")
+  * }}}
+  *
+  * The Accessor type-classes implement the glue to get the specific type configuration item.
+  *
+  * Details on the underlying configuration file specification can be found here:
+  * https://github.com/typesafehub/config/blob/master/HOCON.md
+  */
 trait ConfigurationInstances {
-  import scala.collection.JavaConverters._
 
   val failIfMissing =
     ConfigParseOptions.defaults.setAllowMissing(false)
@@ -127,8 +133,7 @@ trait ConfigurationInstances {
         implicitly[ConfigReader[A]].apply(config)
       }
   }
-
-  private[kadai] def asString(c: Configuration): String = c.toConfig.root.render
+  def asString(c: Configuration): String = c.toConfig.root.render
 
   // utils
 
@@ -161,10 +166,8 @@ class Configuration protected[config] (val c: Config) extends Logging with Seria
       implicitly[Accessor[A]].apply(c, s)
     }
 
-  def keys: List[String] = {
-    import collection.JavaConverters._
-    c.entrySet.asScala map { _.getKey } toList
-  }
+  def keys(s: String): Iterable[String] =
+    implicitly[Accessor[ConfigObject]].apply(c, s).keySet.asScala
 
   private[kadai] def config(s: String): Config =
     apply[Config](s)

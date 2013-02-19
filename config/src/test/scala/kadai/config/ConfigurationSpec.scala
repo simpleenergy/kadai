@@ -36,6 +36,12 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
     "have a url" in { host[String]("url") must be equalTo "http://localhost" }
     "have a port" in { host[Int]("port") must be equalTo 8000 }
     "have a proxyPort" in { host[Int]("proxyBasePort") must be equalTo 9000 }
+    "have a valid ConfigObject for reading a key-value-map" in { 
+      engine.keys("host") |> { keys =>
+        keys.size must be equalTo 3
+        keys must containAllOf(List("url", "port", "proxyBasePort"))
+      } 
+    }
   }
 
   "config" should {
