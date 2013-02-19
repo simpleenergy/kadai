@@ -50,13 +50,6 @@ trait Logger {
 trait LoggingInstances extends std.AllInstances {
   private[log] def apply(cls: Class[_]) = org.apache.logging.log4j.LogManager.getLogger(cls)
 
-  implicit def ShowThrowable[T <: Throwable] = new Show[T] {
-    override def shows(t: T) =
-      (new java.io.StringWriter ~~ {
-        sw => t.printStackTrace(new java.io.PrintWriter(sw))
-      }).toString
-  }
-
   implicit def ShowStringSeq = new Show[Seq[String]] {
     override def shows(ts: Seq[String]) = ts.toList.shows
   }

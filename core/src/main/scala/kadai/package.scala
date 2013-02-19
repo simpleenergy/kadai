@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import scalaz.\/
+
 package object kadai {
 
+  /**
+   * add safe, total methods such as tailOption to traversables
+   */
+  
   import collection.GenTraversableLike
   import collection.generic.IsTraversableLike
   import scalaz._, Scalaz._
@@ -34,9 +40,4 @@ package object kadai {
 
   implicit def TraversableOptionalSyntaxPimp[A, Repr](rep: Repr)(implicit fr: IsTraversableLike[Repr]): TraversableOptionalSyntax[fr.A, Repr] = 
     new TraversableOptionalSyntax(fr conversion rep)
-
-
-  implicit class SideEffectReturningSyntax[A](val a: A) extends AnyVal {
-    def ~~(effect: A => Any): A = { effect(a); a }
-  }
 }

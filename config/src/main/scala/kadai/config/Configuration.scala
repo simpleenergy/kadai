@@ -114,7 +114,7 @@ trait ConfigurationInstances {
   }
   implicit def ClassAccessor[T: Manifest] = new Accessor[Class[T]] {
     def apply(c: Config, s: String): Class[T] =
-      Class.forName(c getString s).asInstanceOf[Class[T]] ~~ { cls =>
+      Class.forName(c getString s).asInstanceOf[Class[T]] <| { cls =>
         manifest[T].runtimeClass |> { expect =>
           if (!(expect isAssignableFrom cls))
             throw new ClassCastException("%s must be a subclass of %s (found [%s])".format(s, expect, cls))
@@ -166,9 +166,7 @@ class Configuration protected[config] (val c: Config) extends Logging with Seria
     c.entrySet.asScala map { _.getKey } toList
   }
 
-  // why is this here?
-  @deprecated("0", "oh no!")
-  def config(s: String): Config =
+  private[kadai] def config(s: String): Config =
     apply[Config](s)
 
   def toConfig: Config = c

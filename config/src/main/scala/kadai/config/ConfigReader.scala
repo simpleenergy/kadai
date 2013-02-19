@@ -31,9 +31,9 @@ trait ConfigReaderInstances {
   def apply[A](accessor: Configuration.Accessor[A])(s: String) =
     new ConfigReader(config => accessor(config.toConfig, s))
 
-  implicit val PointedConfigReader = new scalaz.Pointed[ConfigReader] {
+  implicit val MonadConfigReader = new scalaz.Monad[ConfigReader] {
     def point[A](a: => A) = ConfigReader(a)
-    def map[A, B](c: ConfigReader[A])(f: A => B) = c map f
+    def bind[A, B](c: ConfigReader[A])(f: A => ConfigReader[B]) = c flatMap f
   }
 }
 

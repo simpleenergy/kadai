@@ -15,8 +15,8 @@
 name := "kadai-core"
 
 libraryDependencies in ThisBuild ++= Seq(
-  "com.chuusai"                  %%  "shapeless"         % "1.2.3"
-, "org.scalaz"                   %% "scalaz-core"        % "7.0.0-M7"
-, "org.scalaz"                   %% "scalaz-effect"      % "7.0.0-M7"
-, "org.scala-tools.time"          % "scala-time"         % "2.9.1-atlassian-0.4"
+  "com.chuusai"           %%  "shapeless"             % "1.2.3"
+, "org.scalaz"            %% "scalaz-core"            % "7.0.0-M8"
+, "org.scalaz"            %% "scalaz-effect"          % "7.0.0-M8"
+, "org.scalaj"             % "scalaj-time_2.10.0-M7"  % "0.6"
 )
