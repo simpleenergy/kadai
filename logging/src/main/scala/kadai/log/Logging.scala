@@ -60,6 +60,7 @@ object Logging extends LoggingInstances
 trait Logging extends Logger {
   import Logging._
   /** allow syntax: log info "message" */
+  @transient 
   protected final val log = Logging(this.getClass)
 
   private def show[A: Show](msg: => A) = implicitly[Show[A]].shows(msg)

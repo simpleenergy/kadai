@@ -138,13 +138,13 @@ trait ConfigurationInstances {
   // utils
 
   private[config] val catcher = Exception.nonFatalCatch
+}
 
+object Configuration extends ConfigurationInstances {
   private[kadai] class SerializationProxy(s: String) extends Serializable {
     def readResolve: Object = Configuration from s
   }
 }
-
-object Configuration extends ConfigurationInstances
 
 class Configuration protected[config] (val c: Config) extends Logging with Serializable {
   import Configuration._
@@ -196,5 +196,5 @@ class Configuration protected[config] (val c: Config) extends Logging with Seria
         throw e
     }
 
-  private[kadai] def writeReplace: Object = new SerializationProxy(asString(this))
+  private def writeReplace: Object = new SerializationProxy(asString(this))
 }
