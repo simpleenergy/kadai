@@ -21,7 +21,7 @@ import scalaz.Reader
 
 /** Sugar for creating ConfigReaders */
 trait ConfigReaderInstances {
-  /** Lift something into ConfigReader */
+  /** Build a ConfigReader */
   def apply[A](f: Configuration => A): ConfigReader[A] =
     Reader(f)
 
@@ -37,11 +37,6 @@ trait ConfigReaderInstances {
 
   private[ConfigReaderInstances] def extract(section: String): Configuration => Configuration =
     _.get[Configuration](section)
-
-  implicit val MonadConfigReader = new scalaz.Monad[ConfigReader] {
-    def point[A](a: => A) = Reader(_ => a)
-    def bind[A, B](c: ConfigReader[A])(f: A => ConfigReader[B]) = c flatMap f
-  }
 }
 
 /** Generally used for companion objects that can provide configured implementations */
