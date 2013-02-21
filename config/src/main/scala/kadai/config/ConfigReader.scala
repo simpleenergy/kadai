@@ -15,38 +15,33 @@
  */
 package kadai.config
 
-/** ConfigReader is a Reader monad specialized to the Configuration class */
+import scalaz.Reader
+
+/** ConfigReader is the Reader monad specialized to the Configuration class */
 
 /** Sugar for creating ConfigReaders */
 trait ConfigReaderInstances {
-  /** pass in the sub-context name */
-  def apply[A](s: String)(f: Configuration => A): ConfigReader[A] =
-    new ConfigReader(config => f(config[Configuration](s)))
-
   /** Lift something into ConfigReader */
-  def apply[A](a: => A): ConfigReader[A] =
-    new ConfigReader(_ => a)
+  def apply[A](f: Configuration => A): ConfigReader[A] =
+    Reader(f)
 
   /** if you have an Accessor, use it to build a ConfigReader at the specified name */
-  def apply[A](accessor: Configuration.Accessor[A])(s: String) =
-    new ConfigReader(config => accessor(config.toConfig, s))
+  def named[A: Configuration.Accessor](s: String): ConfigReader[A] =
+    apply {
+      c => implicitly[Configuration.Accessor[A]].apply(c.toConfig, s)
+    }
+
+  /** pass in the sub-context name */
+  def sub[A](section: String)(f: Configuration => A): ConfigReader[A] =
+    apply(extract(section) andThen f)
+
+  private[ConfigReaderInstances] def extract(section: String): Configuration => Configuration =
+    _.get[Configuration](section)
 
   implicit val MonadConfigReader = new scalaz.Monad[ConfigReader] {
-    def point[A](a: => A) = ConfigReader(a)
+    def point[A](a: => A) = Reader(_ => a)
     def bind[A, B](c: ConfigReader[A])(f: A => ConfigReader[B]) = c flatMap f
   }
-}
-
-object ConfigReader extends ConfigReaderInstances
-
-case class ConfigReader[A](private val f: Configuration => A) extends (Configuration => A) {
-  def apply(c: Configuration): A = f(c)
-
-  def map[B](f: A => B): ConfigReader[B] =
-    new ConfigReader(this andThen f)
-
-  def flatMap[B](f: A => ConfigReader[B]): ConfigReader[B] =
-    new ConfigReader(c => f(this(c))(c))
 }
 
 /** Generally used for companion objects that can provide configured implementations */

@@ -69,8 +69,8 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
   }
 
   "thing from factory" should {
-    implicit val ThingFactory = ConfigReader {
-      (config: Configuration) => new Thing(config[Int]("id"))
+    implicit val ThingFactory: ConfigReader[Thing] = ConfigReader {
+      config => new Thing(config[Int]("id"))
     }
 
     val thing = root[Thing]("thing")
