@@ -15,10 +15,10 @@
 import sbt._
 import Keys._
 
-object AtlassianPrivate extends Plugin {
+object Publishing extends Plugin {
   val nexus = "https://maven.atlassian.com/"
-  lazy val release = Some("releases" at nexus + "private")
-  lazy val snapshots = Some("snapshots" at nexus + "private-snapshot")
+  lazy val release = Some("releases" at nexus + "public")
+  lazy val snapshots = Some("snapshots" at nexus + "public-snapshot")
   lazy val local = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
   override def settings = 

@@ -15,7 +15,7 @@
 import sbt._, Keys._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "0.0.4-M7"
+  lazy val projectVersion = "0.0.4-alpha2"
 
   lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
@@ -60,7 +60,6 @@ object KadaiBuild extends Build {
     )
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
   , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-  , publishTo := mavenLocal
   )
 
   lazy val core = Project(id = "core"
