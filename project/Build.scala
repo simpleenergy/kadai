@@ -19,7 +19,7 @@ object KadaiBuild extends Build {
 
   lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
-  lazy val standardSettings = Defaults.defaultSettings ++ List[Project.Setting[_]] (
+  lazy val standardSettings = Defaults.defaultSettings ++ Seq[Project.Setting[_]] (
     organization := "io.kadai"
   , version := projectVersion
   , licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
@@ -60,7 +60,8 @@ object KadaiBuild extends Build {
     )
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
   , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-  )
+  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings // add dependency plugin settings
+
 
   lazy val core = Project(id = "core"
   , base = file("core")
