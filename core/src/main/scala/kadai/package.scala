@@ -17,24 +17,39 @@ import scalaz.\/
 
 package object kadai {
 
-  /**
-   * add safe, total methods such as tailOption to traversables
-   */
-  
+  type Result[A] = Invalid \/ A
+
+  object Result extends ResultInstances
+
+  //
+  // add safe, total methods such as tailOption to traversables
+  //
+
   import collection.GenTraversableLike
   import collection.generic.IsTraversableLike
   import scalaz._, Scalaz._
   import scalaz.syntax.id._
 
-  type Result[A] = Invalid \/ A
-
-  object Result extends ResultInstances
-
+  /**
+   * Add syntax:
+   * 
+   * {{{
+   * coll.notEmpty: Option[CollType]
+   * }}}
+   */
   implicit class NotEmptySyntax[A, Repr: IsTraversableLike](rep: Repr) {
     def notEmpty: Option[Repr] =
       implicitly[IsTraversableLike[Repr]].conversion(rep).isEmpty ? none[Repr] | rep.some
   }
-  
+
+  /**
+   * Add syntax:
+   * 
+   * {{{
+   * coll.tailOption: Option[CollType]
+   * coll.headTailOption: Option[(ElemType, CollType)]
+   * }}}
+   */
   class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr]) {
     def tailOption: Option[Repr] =
       rep.isEmpty ? none[Repr] | rep.tail.some
@@ -43,6 +58,6 @@ package object kadai {
       rep.isEmpty ? none[(A, Repr)] | (rep.head -> rep.tail).some
   }
 
-  implicit def TraversableOptionalSyntaxPimp[A, Repr](rep: Repr)(implicit fr: IsTraversableLike[Repr]): TraversableOptionalSyntax[fr.A, Repr] = 
+  implicit def TraversableOptionalSyntaxPimp[A, Repr](rep: Repr)(implicit fr: IsTraversableLike[Repr]): TraversableOptionalSyntax[fr.A, Repr] =
     new TraversableOptionalSyntax(fr conversion rep)
 }
