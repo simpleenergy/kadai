@@ -22,23 +22,24 @@ import Logging.stringInstance
 import org.apache.logging.log4j.ThreadContext.pop
 import org.apache.logging.log4j.ThreadContext.push
 
-/** Defines a simple logging facility.
-  *
-  * To use simply mix in the Logging trait.
-  * The standard Show type-class instances can
-  * be imported by importing the Logging object:
-  *
-  * For example:
-  * {{{
-  *
-  * class MyClass extends Actor with Logging {
-  * import Logging._
-  *
-  * info("MyClass is instantiated!)
-  * …
-  * }
-  * }}}
-  */
+/**
+ * Defines a simple logging facility.
+ *
+ * To use simply mix in the Logging trait.
+ * The standard Show type-class instances can
+ * be imported by importing the Logging object:
+ *
+ * For example:
+ * {{{
+ *
+ * class MyClass extends Actor with Logging {
+ * import Logging._
+ *
+ * info("MyClass is instantiated!)
+ * …
+ * }
+ * }}}
+ */
 trait Logger {
   protected def error[A: Show](msg: => A): Unit
   protected def warn[A: Show](msg: => A): Unit
@@ -60,16 +61,30 @@ object Logging extends LoggingInstances
 trait Logging extends Logger {
   import Logging._
   /** allow syntax: log info "message" */
-  @transient 
+  @transient
   protected final val log = Logging(this.getClass)
 
-  private def show[A: Show](msg: => A) = implicitly[Show[A]].shows(msg)
+  private def show[A: Show](msg: => A) =
+    implicitly[Show[A]].shows(msg)
 
-  override protected def error[A: Show](msg: => A) = log.error { show(msg) }
-  override protected def warn[A: Show](msg: => A) = log.warn { show(msg) }
-  override protected def info[A: Show](msg: => A) = log.info { show(msg) }
-  override protected def debug[A: Show](msg: => A) = log.debug { show(msg) }
-  override protected def trace[A: Show](msg: => A) = log.trace { show(msg) }
+  override protected def error[A: Show](msg: => A) =
+    log.error { show(msg) }
+
+  override protected def warn[A: Show](msg: => A) =
+    if (log.isWarnEnabled)
+      log.warn { show(msg) }
+
+  override protected def info[A: Show](msg: => A) =
+    if (log.isInfoEnabled)
+      log.info { show(msg) }
+
+  override protected def debug[A: Show](msg: => A) =
+    if (log.isDebugEnabled)
+      log.debug { show(msg) }
+
+  override protected def trace[A: Show](msg: => A) =
+    if (log.isTraceEnabled)
+      log.trace { show(msg) }
 
   def withLog[A](s: String)(f: => A): A = {
     info(s)
