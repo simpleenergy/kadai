@@ -24,6 +24,11 @@ package object kadai {
   import collection.GenTraversableLike
   import collection.generic.IsTraversableLike
   import scalaz._, Scalaz._
+  import scalaz.syntax.id._
+
+  type Result[A] = Invalid \/ A
+
+  object Result extends ResultInstances
 
   implicit class NotEmptySyntax[A, Repr: IsTraversableLike](rep: Repr) {
     def notEmpty: Option[Repr] =
