@@ -42,9 +42,9 @@ object Invalid {
     val newline = Cord(System getProperty "line.separator")
     override def show(inv: Invalid) =
       inv match {
-        case m @ Message(_) => m.toString.show
-        case Err(e)         => e.show
-        case Composite(l, r) => l.show ++ newline ++ r.show
+        case m @ Invalid.Message(_) => m.toString.show
+        case Invalid.Err(e)         => e.show
+        case Invalid.Composite(l, r) => l.show ++ newline ++ r.show
       }
   }
 
