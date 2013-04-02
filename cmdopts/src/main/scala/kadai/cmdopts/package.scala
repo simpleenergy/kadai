@@ -22,7 +22,7 @@ import Scalaz._
 
 package object cmdopts {
 
-  implicit class ValidationNELSyntax[A, B](val v: ValidationNel[A, B]) extends AnyVal {
+  implicit class ValidationNelSyntax[A, B](val v: ValidationNel[A, B]) extends AnyVal {
     def &&[C](other: ValidationNel[A, C]): ValidationNel[A, (B, C)] = (v |@| other) tupled
   }
 }
