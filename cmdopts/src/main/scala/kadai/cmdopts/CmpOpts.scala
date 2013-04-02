@@ -34,7 +34,7 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
       op <- nonFatalCatch.opt { hlister(f)(hl) }
     } yield op
 
-  def check[R](xopt: Option[R], err: String): ValidationNEL[String, R] =
+  def check[R](xopt: Option[R], err: String): ValidationNel[String, R] =
     xopt.map(_.successNel[String]).getOrElse(err.failNel[R])
 
   protected def usage: Option[String] =
@@ -43,7 +43,7 @@ abstract class CmdOpts[T](rawdata: Seq[T]) {
   protected def version: Option[String] =
     None
 
-  protected def validate: ValidationNEL[String, _] =
+  protected def validate: ValidationNel[String, _] =
     ().successNel[String]
 
   protected def handleInfo() {
