@@ -15,7 +15,7 @@
 import sbt._, Keys._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "0.0.4-RC1-SNAPSHOT"
+  lazy val projectVersion = "0.0.4"
 
   lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
