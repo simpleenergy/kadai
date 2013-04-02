@@ -21,6 +21,23 @@ import scalaz._
 import Scalaz._
 import util.control.Exception.nonFatalCatch
 
+/**
+ * This class implements a simple but type-safe command-line option parser.
+ * 
+ * You will generally use this by declaring an object that extends CmdOpts and passing in
+ * args (the array of cmd-line String arguments).
+ * 
+ * You then ask for the specific options by calling 'opt' with the String for the option name, 
+ * and a function that takes the next n Strings and returns a thing of the type you want. If
+ * the arguments are found they are passed to the function and the result is returned inside
+ * a Some, if they cannot be found or an exception is thrown from the function, a None is returned.
+ * 
+ * Validation error messages can be specified by implementing the validate method.
+ * 
+ * Usage and Version messages can be specified by implementing the usage and version methods respectively.
+ * 
+ * @see Example.scala
+ */
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
   def opt[H <: HList, N <: Nat, F, R](t: T, f: F)(
