@@ -32,17 +32,18 @@ object KadaiBuild extends Build {
         </scm>
         <distributionManagement>
             <repository>
-                <id>atlassian-private</id>
-                <name>Atlassian Private Repository</name>
-                <url>https://maven.atlassian.com/private</url>
+                <id>atlassian-public</id>
+                <name>Atlassian Public Repository</name>
+                <url>https://maven.atlassian.com/public</url>
             </repository>
             <snapshotRepository>
-                <id>atlassian-private-snapshot</id>
-                <name>Atlassian Private Snapshot Repository</name>
-                <url>https://maven.atlassian.com/private-snapshot</url>
+                <id>atlassian-public-snapshot</id>
+                <name>Atlassian Public Snapshot Repository</name>
+                <url>https://maven.atlassian.com/public-snapshot</url>
             </snapshotRepository>
         </distributionManagement>
     )
+  , pomIncludeRepository := { (repo: MavenRepository) => false } // no repositories in the pom
   , scalaVersion := "2.10.0"
   , scalacOptions := Seq("-deprecation", "-unchecked", "-feature", "-language:_")
   , resolvers ++= Seq(
@@ -51,8 +52,8 @@ object KadaiBuild extends Build {
     , "atlassian-public" at "https://maven.atlassian.com/content/groups/atlassian-public/"
     , "atlassian-internal" at "https://maven.atlassian.com/content/groups/internal/"
       // Contegix, m2proxy.atlassian.com is borked, m2proxy-int.private.atlassian.com works
-    , "atlassian-public-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/atlassian-public/"
-    , "atlassian-internal-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/internal/"
+    //, "atlassian-public-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/atlassian-public/"
+    //, "atlassian-internal-ctx" at "http://m2proxy-int.private.atlassian.com/content/groups/internal/"
     )
   , mappings in (Compile, packageBin) ++= Seq(
       file("LICENSE") -> "META-INF/LICENSE"
@@ -61,7 +62,6 @@ object KadaiBuild extends Build {
   , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
   , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings // add dependency plugin settings
-
 
   lazy val core = Project(id = "core"
   , base = file("core")
