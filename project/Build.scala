@@ -83,6 +83,11 @@ object KadaiBuild extends Build {
   , settings = standardSettings
   ).dependsOn(core, logging)
 
+  lazy val concurrent = Project(id = "concurrent"
+  , base = file("concurrent")
+  , settings = standardSettings
+  ).dependsOn(config)
+
   lazy val all = Project(id = "all"
   , base = file(".")
   , settings = standardSettings
