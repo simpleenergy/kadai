@@ -91,5 +91,5 @@ object KadaiBuild extends Build {
   lazy val all = Project(id = "all"
   , base = file(".")
   , settings = standardSettings
-  ) aggregate (core, config, logging, cmdopts) dependsOn (core, config, logging, cmdopts)
+  ) aggregate (core, config, logging, cmdopts, concurrent) dependsOn (core, config, logging, cmdopts, concurrent)
 }
