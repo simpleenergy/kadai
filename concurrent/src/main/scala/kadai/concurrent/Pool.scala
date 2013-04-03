@@ -5,9 +5,9 @@ object Pool {
 }
 
 /**
- * Pool manages two queues of available and busy objects. While the queues
- * are immutable, Pool itself is not thread safe unless created through
- * AtomicPool.
+ * Pool manages two queues of available and busy objects.
+ * 
+ * Immutable, variable reference needs to be managed externally.
  */
 case class Pool[+A](available: List[A] = Nil, busy: List[A] = Nil) {
 
@@ -38,8 +38,8 @@ case class Pool[+A](available: List[A] = Nil, busy: List[A] = Nil) {
 }
 
 /**
- * Creates a threadsafe Pool wrapper
+ * Creates a thread-safe mutable Pool wrapper
  */
 object AtomicPool {
-  def apply[A](available: List[A] = Nil, busy: List[A] = Nil): Atomic[Pool[A]] = Atomic(Pool[A](available, busy))
+  def apply[A](available: List[A] = Nil, busy: List[A] = Nil): Atomic[Pool[A]] = Atomic(Pool(available, busy))
 }
