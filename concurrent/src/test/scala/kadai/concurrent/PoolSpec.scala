@@ -48,7 +48,7 @@ class PoolSpec extends org.specs2.mutable.SpecificationWithJUnit {
     "take objects back and have them removed from the busy queue" in { busyPool.giveBack(3).busy.isEmpty must be equalTo true }
     "take objects back and have them returned to the available queue" in { busyPool.giveBack(3).available.size must be equalTo 3 }
   }
-  
+
   def emptyPool = Pool.empty
   def fullPool = Pool[Int](List(1, 2, 3))
   def busyPool = Pool[Int](List(1, 2), List(3))
