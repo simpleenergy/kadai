@@ -25,7 +25,7 @@ class PoolSpec extends org.specs2.mutable.SpecificationWithJUnit {
     "allow to give one back that wasn't there before" in { emptyPool.giveBack(0).available.size must be equalTo 1 }
     "allow to add something" in { 1 :: 2 :: 3 :: emptyPool must be equalTo fullPool }
   }
-  
+
   "Full pool" should {
     "have an available queue" in { fullPool.available.size must be equalTo 3 }
     "have an empty busy queue" in { fullPool.busy.isEmpty must be equalTo true }
@@ -38,7 +38,7 @@ class PoolSpec extends org.specs2.mutable.SpecificationWithJUnit {
     }
     "allow to add something" in { (4 :: fullPool).available.size must be equalTo 4 }
   }
-  
+
   "Busy pool" should {
     "have a busy queue" in { busyPool.busy.size must be equalTo 1 }
     "have an available queue" in { busyPool.available.size must be equalTo 2 }
