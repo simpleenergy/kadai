@@ -20,7 +20,3 @@ libraryDependencies in ThisBuild ++= Seq(
   "org.specs2"                        %% "specs2"         % "1.14"  % "test"
  ,"junit"                              % "junit"          % "4.11"  % "test"
 )
-
-EclipseKeys.withSource in ThisBuild := true
-
-EclipseKeys.createSrc in ThisBuild := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
