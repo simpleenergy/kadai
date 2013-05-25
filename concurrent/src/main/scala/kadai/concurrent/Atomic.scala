@@ -26,15 +26,20 @@ import java.util.concurrent.atomic.AtomicReference
  * }}}
  */
 final class Atomic[A <: AnyRef](default: A) extends AtomicReference[A](default) {
-  /** Update from the old to a new value and return the newly computed value. */
+  /** 
+   * Update from the old to a new value and return the newly computed value.
+   *
+   * Note that the passed function must be pure as it may be re-computed if there is
+   * contention when setting the updated value.
+   */
   @annotation.tailrec
   final def update(f: A => A): A = {
-    val a = get
-    val b = f(a)
-    if ((a.eq(get)) && compareAndSet(a, b)) 
-      b
+    val old = get
+    val a = f(old)
+    if ((old eq get) && compareAndSet(old, a)) 
+      a
     else 
-      update(f)
+      update(f) // contention, retry
   }
 
   /** Update from the old to a new value and return a companion value computed at the same time. */
