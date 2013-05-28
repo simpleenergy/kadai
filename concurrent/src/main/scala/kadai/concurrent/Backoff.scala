@@ -29,13 +29,11 @@ object Backoff {
 
 /** Simple backoff implementation, not exponential, grows randomly but linearly
   */
-class Backoff(range: Int) extends (() => Unit) {
+class Backoff(range: Int) extends (Int => Unit) {
   private val rnd = util.Random
-  private var pause: Int = _
 
   @throws(classOf[InterruptedException])
-  def apply() {
-    pause += rnd.nextInt(range)
-    Thread.sleep(pause)
+  def apply(i: Int) {
+    Thread.sleep(rnd.nextInt(range * i))
   }
 }

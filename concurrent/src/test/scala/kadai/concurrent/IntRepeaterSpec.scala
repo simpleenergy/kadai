@@ -41,7 +41,7 @@ class IntRepeaterSpec extends org.specs2.mutable.SpecificationWithJUnit {
     "run successfully despite exceptions" in {
       val u = new Unstable(3, 3)
       var retry = 0
-      3.retriesWith(retry += 1) {
+      3.retriesWith(retry = _) {
         retry must be equalTo 2
       }
     }
