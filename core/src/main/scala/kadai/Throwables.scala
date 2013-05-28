@@ -15,9 +15,9 @@
  */
 package kadai
 
-import java.io._
-import scalaz._
-import Scalaz._
+import java.io.{PrintWriter, StringWriter}
+
+import scalaz.Scalaz._
 
 object Throwables {
   def asString(t: Throwable) = {

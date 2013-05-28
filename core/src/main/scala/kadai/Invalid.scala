@@ -15,11 +15,13 @@
  */
 package kadai
 
+import Throwables.ShowThrowable
+import scalaz.{ Cord, Equal, NonEmptyList, Semigroup, Show, \/ }
+import scalaz.Scalaz._
+
 sealed trait Invalid
 
 object Invalid {
-  import scalaz._, Scalaz._
-  import Throwables._
 
   case class Message(s: String) extends Invalid
   case class Err(x: Throwable) extends Invalid {
@@ -42,8 +44,8 @@ object Invalid {
     val newline = Cord(System getProperty "line.separator")
     override def show(inv: Invalid) =
       inv match {
-        case m @ Invalid.Message(_) => m.toString.show
-        case Invalid.Err(e)         => e.show
+        case Invalid.Message(m)      => m.show
+        case Invalid.Err(e)          => e.show
         case Invalid.Composite(l, r) => l.show ++ newline ++ r.show
       }
   }
