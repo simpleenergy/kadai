@@ -58,4 +58,10 @@ trait ConfigReaderInstances {
 
   private[ConfigReaderInstances] def extract(section: String): Configuration => Configuration =
     _.get[Configuration](section)
+
+  /** syntactic sugar for when we have an explicit ConfigReader we want to execute */
+  implicit class ConfigReaderSyntax[A](reader: ConfigReader[A]) {
+    def execute(c: Configuration): A =
+      run(c)(reader)
+  }
 }
