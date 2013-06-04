@@ -27,31 +27,32 @@ import com.typesafe.config.{ Config, ConfigFactory, ConfigObject, ConfigParseOpt
 
 import log.Logging
 import log.Logging.stringInstance
-import scalaz.syntax.id.ToIdOps
+import scalaz.syntax.id._
 
-/** Simple user-friendly wrapper around Config.
-  *
-  * Provides a single type-safe apply method for getting values out from the configuration.
-  *
-  * Usage:
-  * {{{
-  * val config = Configuration.load("filename.conf").get[Configuration]("objectName")
-  * val intThing = config[Int]("intPropertyName")
-  * val strThing = config[String]("stringPropertyName")
-  * }}}
-  * Note that formatting or other problems will throw exceptions.
-  *
-  * You can also optionally find correct config items or validate and check their correctness (with Either):
-  * {{{
-  * val intOption:Option[Int] = config.option[Int]("intPropertyName")
-  * val strThing: Either[Throwable, String] = config.valid[String]("stringPropertyName")
-  * }}}
-  *
-  * The Accessor type-classes implement the glue to get the specific type configuration item.
-  *
-  * Details on the underlying configuration file specification can be found here:
-  * https://github.com/typesafehub/config/blob/master/HOCON.md
-  */
+/**
+ * Simple user-friendly wrapper around Config.
+ *
+ * Provides a single type-safe apply method for getting values out from the configuration.
+ *
+ * Usage:
+ * {{{
+ * val config = Configuration.load("filename.conf").get[Configuration]("objectName")
+ * val intThing = config[Int]("intPropertyName")
+ * val strThing = config[String]("stringPropertyName")
+ * }}}
+ * Note that formatting or other problems will throw exceptions.
+ *
+ * You can also optionally find correct config items or validate and check their correctness (with Either):
+ * {{{
+ * val intOption:Option[Int] = config.option[Int]("intPropertyName")
+ * val strThing: Either[Throwable, String] = config.valid[String]("stringPropertyName")
+ * }}}
+ *
+ * The Accessor type-classes implement the glue to get the specific type configuration item.
+ *
+ * Details on the underlying configuration file specification can be found here:
+ * https://github.com/typesafehub/config/blob/master/HOCON.md
+ */
 trait ConfigurationInstances {
 
   val failIfMissing =
@@ -78,6 +79,11 @@ trait ConfigurationInstances {
 
   /** The type-class that is used to extract a config item of a particular type. */
   trait Accessor[A] extends ((Config, String) => A)
+  
+  object Accessor {
+    def apply[A: Accessor]: Accessor[A] =
+      implicitly[Accessor[A]]
+  }
 
   //
   // standard type-class instances
@@ -129,10 +135,9 @@ trait ConfigurationInstances {
   }
   implicit def ConfigReaderAccessor[A: ConfigReader]: Accessor[A] = new Accessor[A] {
     def apply(c: Config, s: String) =
-      Configuration(c).apply[Configuration](s) |> { config =>
-        implicitly[ConfigReader[A]].apply(config)
-      }
+      Configuration(c)[Configuration](s) |> { c => ConfigReader.run(c) }
   }
+
   def asString(c: Configuration): String = c.toConfig.root.render
 
   // utils

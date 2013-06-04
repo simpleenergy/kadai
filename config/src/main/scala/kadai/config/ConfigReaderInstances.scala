@@ -15,31 +15,47 @@
  */
 package kadai.config
 
-import scalaz.Reader
-
-/** ConfigReader is the Reader monad specialized to the Configuration class */
+import scalaz.{ Id, Kleisli, syntax }
+import Id._
+import syntax.applicative._
+import syntax.comonad._
+import Configuration.Accessor
 
 /** Sugar for creating ConfigReaders */
 trait ConfigReaderInstances {
+
+  /** implicitly summon a ConfigReader using syntax: `ConfigReader[A]` */
+  def apply[A: ConfigReader]: ConfigReader[A] =
+    implicitly[ConfigReader[A]]
+
+  /** run a ConfigReader by passing in a Configuration */
+  def run[A: ConfigReader](config: Configuration) =
+    ConfigReader[A].run(config).go { // run the Free to get the Id[A] out
+      _.copoint // Id is a trivial comonad, copoint to get the value
+    }
+
+  //
+  // factory methods for helping to build ConfigReader instances
+  //
+  
   /** Build a ConfigReader */
   def apply[A](f: Configuration => A): ConfigReader[A] =
-    Reader(f)
+    Kleisli {
+      f andThen { _.point[FreeId] }
+    }
 
   /** if you have an Accessor, use it to build a ConfigReader at the specified name */
-  def named[A: Configuration.Accessor](s: String): ConfigReader[A] =
+  def named[A: Accessor](s: String): ConfigReader[A] =
     apply {
-      c => implicitly[Configuration.Accessor[A]].apply(c.toConfig, s)
+      c => Accessor[A].apply(c.toConfig, s)
     }
 
   /** pass in the sub-context name */
   def sub[A](section: String)(f: Configuration => A): ConfigReader[A] =
-    apply(extract(section) andThen f)
+    apply {
+      extract(section) andThen f
+    }
 
   private[ConfigReaderInstances] def extract(section: String): Configuration => Configuration =
     _.get[Configuration](section)
-}
-
-/** Generally used for companion objects that can provide configured implementations */
-trait Configurable[A] {
-  def config: ConfigReader[A]
 }
