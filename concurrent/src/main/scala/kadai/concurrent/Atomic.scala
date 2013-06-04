@@ -18,8 +18,10 @@ package kadai.concurrent
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * Extension to [[AtomicReference]] that allows more idiomatic usage. It adds a
- * "value" that can be set with an update function:
+ * Extension to [[java.util.concurrent.atomic.AtomicReference]] that 
+ * allows more idiomatic usage.
+ * 
+ * It adds a "value" that can be set with an update function:
  * {{{
  * value = (a: A) => calculate(a)
  * value = calculate(_)
