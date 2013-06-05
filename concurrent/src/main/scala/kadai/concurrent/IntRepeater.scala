@@ -16,6 +16,7 @@
 package kadai
 package concurrent
 
+import language.implicitConversions
 import log.Logging
 
 object IntRepeater {
