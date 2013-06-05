@@ -29,7 +29,7 @@ trait ConfigReaderInstances {
     implicitly[ConfigReader[A]]
 
   /** run a ConfigReader by passing in a Configuration */
-  def run[A: ConfigReader](config: Configuration) =
+  def run[A: ConfigReader](config: Configuration): A =
     ConfigReader[A].run(config).go { // run the Free to get the Id[A] out
       _.copoint // Id is a trivial comonad, copoint to get the value
     }
@@ -52,7 +52,7 @@ trait ConfigReaderInstances {
 
   /** pass in the sub-context name */
   def sub[A](section: String)(f: Configuration => A): ConfigReader[A] =
-    apply {
+    this {
       extract(section) andThen f
     }
 
@@ -61,7 +61,7 @@ trait ConfigReaderInstances {
 
   /** syntactic sugar for when we have an explicit ConfigReader we want to execute */
   implicit class ConfigReaderSyntax[A](reader: ConfigReader[A]) {
-    def execute(c: Configuration): A =
-      run(c)(reader)
+    def extract(c: Configuration): A =
+      run(c)(reader) // explicitly pass the implicit reader param
   }
 }
