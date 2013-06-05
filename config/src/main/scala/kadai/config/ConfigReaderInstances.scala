@@ -56,6 +56,18 @@ trait ConfigReaderInstances {
       extract(section) andThen f
     }
 
+  /** a constant value */
+  def value[A](a: => A): ConfigReader[A] =
+    this { _ => a }
+  
+  /** produce a reader that runs with a modified config. */
+  def local[A](f: Configuration => Configuration)(implicit reader: ConfigReader[A]): ConfigReader[A] =
+    this { c => run(f(c)) }
+
+   /** provides access to the current config */
+  def ask: ConfigReader[Configuration] =
+    this { config => config } // cannot use identity for some reason
+
   private[ConfigReaderInstances] def extract(section: String): Configuration => Configuration =
     _.get[Configuration](section)
 
