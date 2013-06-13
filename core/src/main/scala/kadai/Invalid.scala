@@ -16,7 +16,7 @@
 package kadai
 
 import Throwables.ShowThrowable
-import scalaz.{ Cord, Equal, NonEmptyList, Semigroup, Show, \/ }
+import scalaz.{ Cord, Equal, Monoid, NonEmptyList, Show, \/ }
 import scalaz.Scalaz._
 
 sealed trait Invalid
@@ -33,6 +33,7 @@ object Invalid {
     override def hashCode = x.getClass.hashCode + Option(x.getMessage).hashCode
   }
   case class Composite(l: Invalid, r: Invalid) extends Invalid
+  object Zero extends Invalid
 
   trait ConvertTo {
     def invalid: Invalid
@@ -47,6 +48,7 @@ object Invalid {
         case Invalid.Message(m)      => m.show
         case Invalid.Err(e)          => e.show
         case Invalid.Composite(l, r) => l.show ++ newline ++ r.show
+        case Invalid.Zero            => "unknown".show
       }
   }
 
@@ -54,7 +56,14 @@ object Invalid {
     def equal(a: Invalid, b: Invalid) = a == b
   }
 
-  implicit val InvalidSemiGroup = new Semigroup[Invalid] {
-    def append(l: Invalid, r: => Invalid) = Composite(l, r)
+  implicit val InvalidMonoid = new Monoid[Invalid] {
+    def zero = Zero
+    def append(l: Invalid, r: => Invalid) =
+      (l, r) match {
+        case (Zero, Zero) => Zero
+        case (l, Zero)    => l
+        case (Zero, r)    => r
+        case (l, r)       => Composite(l, r)
+      }
   }
 }
