@@ -44,7 +44,7 @@ object KadaiBuild extends Build {
         </distributionManagement>
     )
   , pomIncludeRepository := { (repo: MavenRepository) => false } // no repositories in the pom
-  , scalaVersion := "2.10.1"
+  , scalaVersion := "2.10.2"
   , scalacOptions := Seq("-deprecation", "-unchecked", "-feature", "-language:_")
   , resolvers ++= Seq(
       "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
