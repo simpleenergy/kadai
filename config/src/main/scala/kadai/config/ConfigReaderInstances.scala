@@ -45,28 +45,35 @@ trait ConfigReaderInstances {
     }
 
   /** if you have an Accessor, use it to build a ConfigReader at the specified name */
+  def read[A: Accessor](s: String): ConfigReader[A] =
+    apply { _[A](s) }
+
+  /** synonym for read */
   def named[A: Accessor](s: String): ConfigReader[A] =
-    apply {
-      c => Accessor[A].apply(c.toConfig, s)
-    }
+    read(s)
+
+  def option[A: Accessor](s: String): ConfigReader[Option[A]] =
+    apply { _.option[A](s) }
+
+  /** pass in the sub-context name */
+  def subsection(section: String): ConfigReader[Configuration] =
+    apply { extract(section) }
 
   /** pass in the sub-context name */
   def sub[A](section: String)(f: Configuration => A): ConfigReader[A] =
-    this {
-      extract(section) andThen f
-    }
+    apply { extract(section) andThen f }
 
   /** a constant value */
   def value[A](a: => A): ConfigReader[A] =
-    this { _ => a }
+    apply { _ => a }
   
   /** produce a reader that runs with a modified config. */
   def local[A](f: Configuration => Configuration)(implicit reader: ConfigReader[A]): ConfigReader[A] =
-    this { c => run(f(c)) }
+    apply { c => run(f(c)) }
 
    /** provides access to the current config */
   def ask: ConfigReader[Configuration] =
-    this { config => config } // cannot use identity for some reason
+    apply { config => config } // cannot use identity for some reason
 
   private[ConfigReaderInstances] def extract(section: String): Configuration => Configuration =
     _.get[Configuration](section)
