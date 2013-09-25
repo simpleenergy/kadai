@@ -15,5 +15,6 @@
 name := "kadai-config"
 
 libraryDependencies in ThisBuild ++= Seq(
-  "com.typesafe"                      % "config"             % "1.0.0"
+  "com.typesafe"              % "config"             % "1.0.0"
+, "com.github.nscala-time"   %% "nscala-time"        % "0.6.0"
 )
