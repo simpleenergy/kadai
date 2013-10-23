@@ -17,6 +17,8 @@ The modules are:
 :core:
     basic data structures for disjunction result types with Invalids holding errors or error messages
     on the left and and utilities for turning exceptions into Invalid results
+:concurrent:
+    commonly useful concurrency primitives
 :config:
     simple Scala interface to the typesafe-config library with a Reader monad for composing 
     configurable things and injecting configuration files.
