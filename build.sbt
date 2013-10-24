@@ -17,6 +17,6 @@ name := "kadai"
 description := "bootstrap tools for a Scala project"
 
 libraryDependencies in ThisBuild ++= Seq(
-  "org.specs2"                        %% "specs2"         % "1.14"  % "test"
+  "org.specs2"                        %% "specs2"         % "2.2.3" % "test"
  ,"junit"                              % "junit"          % "4.11"  % "test"
 )
