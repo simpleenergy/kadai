@@ -18,6 +18,7 @@ package config
 
 import java.io.{ File, Serializable }
 
+import scala.annotation.implicitNotFound
 import scala.collection.JavaConverters.{ asScalaBufferConverter, asScalaSetConverter, mapAsJavaMapConverter }
 import scala.util.control.{ Exception, NonFatal }
 
@@ -26,7 +27,7 @@ import org.joda.time.DateTime
 import com.typesafe.config.{ Config, ConfigFactory, ConfigObject, ConfigParseOptions, ConfigResolveOptions }
 
 import log.Logging
-import log.Logging.stringInstance
+import Logging._
 import scalaz.syntax.id._
 
 /**
@@ -78,8 +79,9 @@ trait ConfigurationInstances {
     }
 
   /** The type-class that is used to extract a config item of a particular type. */
+  @implicitNotFound(msg = "Cannot find Configuration.Accessor for type ${A} – it is needed to extract config text and instantiate an element of that type")
   trait Accessor[A] extends ((Config, String) => A)
-  
+
   object Accessor {
     def apply[A: Accessor]: Accessor[A] =
       implicitly[Accessor[A]]
