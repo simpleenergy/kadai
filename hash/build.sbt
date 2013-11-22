@@ -14,4 +14,4 @@
 
 name := "kadai-hash"
 
-libraryDependencies in ThisBuild ++= Seq()
+libraryDependencies ++= Seq()
