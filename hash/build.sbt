@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-name := "kadai"
+name := "kadai-hash"
 
-description := "bootstrap tools for a Scala project"
-
-libraryDependencies in ThisBuild ++= Seq(
-  "org.specs2"                        %% "specs2"         % "2.3.4" % "test" excludeAll(ExclusionRule(organization = "com.chuusai"))
- ,"junit"                              % "junit"          % "4.11"  % "test"
-)
+libraryDependencies in ThisBuild ++= Seq()

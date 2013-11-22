@@ -44,7 +44,7 @@ object KadaiBuild extends Build {
         </distributionManagement>
     )
   , pomIncludeRepository := { (repo: MavenRepository) => false } // no repositories in the pom
-  , scalaVersion := "2.10.2"
+  , scalaVersion := "2.10.3"
   , scalacOptions := Seq("-deprecation", "-unchecked", "-feature", "-language:_")
   , resolvers ++= Seq(
       "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
@@ -59,7 +59,6 @@ object KadaiBuild extends Build {
       file("LICENSE") -> "META-INF/LICENSE"
     , file("NOTICE")  -> "META-INF/NOTICE"
     )
-  , libraryDependencies ++= Seq("org.specs2" %%  "specs2" % "1.13" % "test")
   , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings // add dependency plugin settings
 
@@ -88,8 +87,17 @@ object KadaiBuild extends Build {
   , settings = standardSettings
   ).dependsOn(config)
 
+  lazy val hash = Project(id = "hash"
+  , base = file("hash")
+  , settings = standardSettings
+  ).dependsOn(core)
+
   lazy val all = Project(id = "all"
   , base = file(".")
   , settings = standardSettings
-  ) aggregate (core, config, logging, cmdopts, concurrent) dependsOn (core, config, logging, cmdopts, concurrent)
+  ) aggregate (
+    core, config, logging, cmdopts, concurrent, hash
+  ) dependsOn (
+    core, config, logging, cmdopts, concurrent, hash
+  )
 }
