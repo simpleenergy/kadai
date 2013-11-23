@@ -1,17 +1,18 @@
 package kadai
 package hash
 
-import scalaz.Tag
+import scalaz.{ Tag, syntax }
 import kadai.Encoding
+import syntax.id._
 
 case class SHA1(val bigInt: BigInt) {
   import SHA1._
 
   lazy val toBase16: Hash[Base16] =
-    Tag(toString(16))
+    Tag(toString(16).padLeft(40, '0'))
 
   lazy val toBase32: Hash[Base32] =
-    Tag(new String(toString(32).map { _.asDigit }.map { Encoding.B32 }.toArray))
+    Tag(new String(toString(32).map { _.asDigit }.map { Encoding.B32 }.toArray).padLeft(32, 'A'))
 
   def toByteArray: Array[Byte] = {
     val b = bigInt.toByteArray
