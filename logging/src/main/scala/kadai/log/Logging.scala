@@ -94,6 +94,6 @@ trait Logging extends Logger {
   def withLogContext[A](s: String)(f: => A): A = {
     import org.apache.logging.log4j.ThreadContext._
     push(s)
-    try f finally pop
+    try f finally { pop; () }
   }
 }

@@ -24,6 +24,6 @@ object HostConverter {
 @ConverterKeys(Array("host"))
 class HostConverter(host: String) extends LogEventPatternConverter("hostname", "") {
   def format(e: core.LogEvent, sb: java.lang.StringBuilder) {
-    sb.append(host);
+    sb.append(host); ()
   }
 }

@@ -11,11 +11,13 @@ class SysProp(s: String, v: String) extends Around {
     System.setProperty(s, v)
     com.typesafe.config.impl.TypesafeConfigWhacker.flushSystemPropertiesCache
     try implicitly[AsResult[A]].asResult(a)
-    finally
+    finally {
       old.map {
         System.setProperty(s, _)
       } getOrElse {
         System clearProperty s
       }
+      ()
+    }
   }
 }

@@ -45,7 +45,8 @@ object KadaiBuild extends Build {
     )
   , pomIncludeRepository := { (repo: MavenRepository) => false } // no repositories in the pom
   , scalaVersion := "2.10.3"
-  , scalacOptions := Seq("-deprecation", "-unchecked", "-feature", "-language:_")
+  , scalacOptions := Seq("-deprecation", "-unchecked", "-feature", "-language:_", "-Ywarn-value-discard",  "-Xfatal-warnings", "-Xlog-free-terms")
+  , javacOptions ++= Seq("-encoding", "UTF-8")
   , resolvers ++= Seq(
       "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
     , "Tools Releases"   at "http://oss.sonatype.org/content/repositories/releases"
@@ -60,6 +61,7 @@ object KadaiBuild extends Build {
     , file("NOTICE")  -> "META-INF/NOTICE"
     )
   , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+  , addCompilerPlugin("org.scala-lang.plugins" % "macro-paradise" % "2.0.0-SNAPSHOT" cross CrossVersion.full)
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings // add dependency plugin settings
 
   lazy val core = Project(id = "core"

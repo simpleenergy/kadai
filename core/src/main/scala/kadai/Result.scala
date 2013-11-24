@@ -30,7 +30,7 @@ trait ResultInstances {
   }
 
   implicit val EachResult = new Each[Result] {
-    def each[A](fa: Result[A])(f: A => Unit) = fa map f
+    def each[A](fa: Result[A])(f: A => Unit) = { fa map f; () }
   }
 
   /** Evaluate the given value, which might throw an exception. */
