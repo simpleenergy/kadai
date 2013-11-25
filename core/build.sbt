@@ -18,8 +18,8 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies in ThisBuild ++= Seq(
   "com.chuusai"            %% "shapeless"              % "1.2.4"
-, "org.scalaz"             %% "scalaz-core"            % "7.0.4"
-, "org.scalaz"             %% "scalaz-effect"          % "7.0.4"
+, "org.scalaz"             %% "scalaz-core"            % "7.0.5"
+, "org.scalaz"             %% "scalaz-effect"          % "7.0.5"
 )
 
 libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _)
