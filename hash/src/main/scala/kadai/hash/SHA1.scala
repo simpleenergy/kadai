@@ -26,18 +26,18 @@ case class SHA1(val bigInt: BigInt) {
   def toString(base: Int) =
     bigInt.toString(base)
 
-  override def toString =
+  override lazy val toString =
     s"SHA1(${toBase16})"
 }
 
 /** Tag for computed SHA1 Strings */
 object SHA1 { //extends (String => SHA1) {
 
-  def fromBase32(base32: Hash[Base32]): SHA1 =
-    from(base32, 32) { Encoding.B32.indexOf(_) }
+  def fromBase32(s: Hash[Base32]): SHA1 =
+    SHA1(Encoding.B32.toBigIntUnsafe(s))
 
-  def fromBase16(base16: Hash[Base16]): SHA1 =
-    from(base16, 16) { Encoding.B16.indexOf(_) }
+  def fromBase16(s: Hash[Base16]): SHA1 =
+    SHA1(Encoding.B16.toBigIntUnsafe(s))
 
   private def from(s: String, base: Int)(f: Char => Int): SHA1 =
     SHA1 { s.map { c => f(c.toUpper) }.foldLeft(0: BigInt) { (a, b) => a * base + b } }
