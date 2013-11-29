@@ -52,6 +52,9 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
     "have an embedded config object" in {
       config.getConfig("embed").getConfig("more").getString("string") must be equalTo "woohoo"
     }
+    "support variable substitution" in {
+      config.getConfig("embed").getConfig("more").getString("thevar") must be equalTo "something to substitute"
+    }
   }
 
   "Configuration objects" should {
@@ -65,6 +68,9 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
     "have an optional number" in { config.option[Int]("number") must be equalTo Some(42) }
     "not be able to parse a number from a String (as a none)" in {
       config.option[Int]("string") must be equalTo None
+    }
+    "support variable substitution" in {
+      config[String]("embed.more.thevar") must be equalTo "something to substitute"
     }
   }
 
@@ -80,14 +86,19 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
 
   "Configuration.from(String)" should {
     val str = Configuration.from("""
+        variable = to substitute
         embed {
           string = woohoo
           int = 12
+          var = ${variable}
         }""")
     "not be null" in { str must not beNull }
     "have embedded" in { str[Configuration]("embed") must not beNull }
     "have a string" in { str[String]("embed.string") must be equalTo "woohoo" }
     "have an int" in { str[Int]("embed.int") must be equalTo 12 }
+    "support variable substitution" in {
+      str[String]("embed.var") must be equalTo "to substitute"
+    }
   }
 
   "Configuration.overriding" should {
@@ -112,9 +123,13 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
     "not fail if the file is existing" in {
       Configuration.from(file) |> (_[String]("thing.id") must be equalTo "667")
     }
-
     "fail if the file is not existing" in {
       Configuration.from(new java.io.File("nosuchfile.conf")) must throwA[com.typesafe.config.ConfigException.IO]
+    }
+    "support variable substitution" in {
+      Configuration.from(file) |> {
+        _[String]("config.embed.more.thevar") must be equalTo "something to substitute"
+      }
     }
   }
 
@@ -125,6 +140,11 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
 
     "fail if the resource is not existing" in {
       Configuration.load("nosuchfile.conf") must throwA[com.typesafe.config.ConfigException.IO]
+    }
+    "support variable substitution" in {
+      Configuration.load("test.conf") |> {
+        _[String]("config.embed.more.thevar") must be equalTo "something to substitute"
+      }
     }
   }
 
@@ -140,5 +160,3 @@ class ConfigurationSpec extends org.specs2.mutable.Specification {
 }
 
 class Thing(val id: Int)
-
-

@@ -63,18 +63,18 @@ trait ConfigurationInstances {
     new Configuration(c)
 
   def from(s: String) =
-    Configuration(ConfigFactory parseString s)
+    Configuration(ConfigFactory.parseString(s).resolve)
 
   def from(f: File) =
     Configuration {
-      ConfigFactory.defaultOverrides.withFallback(ConfigFactory.parseFile(f, failIfMissing))
+      ConfigFactory.defaultOverrides.withFallback(ConfigFactory.parseFile(f, failIfMissing).resolve)
     }
 
   /** The path is always relative and on the classpath. */
   def load(path: String) =
     Configuration {
       ConfigFactory.defaultOverrides.withFallback {
-        ConfigFactory.load(path, failIfMissing, ConfigResolveOptions.defaults)
+        ConfigFactory.load(path, failIfMissing, ConfigResolveOptions.defaults) // by default resolves
       }
     }
 
