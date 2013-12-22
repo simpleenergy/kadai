@@ -23,7 +23,7 @@ case class SHA1(val bigInt: BigInt) {
     else b
   }
 
-  def toString(base: Int) =
+  private[hash] def toString(base: Int) =
     bigInt.toString(base)
 
   override lazy val toString =
@@ -55,22 +55,32 @@ object SHA1 { //extends (String => SHA1) {
     def apply(bytes: Array[Byte]): Digester =
       Data(Vector(bytes))
 
-    def compute(d: Digester): SHA1 = d match {
-      case c @ Consumer() => c.digest
-      case Data(bytes)    => (Consumer() + bytes).digest
-    }
+    def compute(d: Digester): SHA1 =
+      d match {
+        case c @ Consumer() => c.digest
+        case Data(bytes)    => (Consumer() + bytes).digest
+      }
 
+    /** 
+     *  Note: this is not a law-abiding Monoid. It only works if zero is 
+     *  invoked exactly once for a reduction.
+     *  
+     *  Specifically it doesn't work if there are multiple Consumers, 
+     *  as there is no way to add two together, the state they carry is 
+     *  always calculated dependent on the previous (left-side) state.
+     */
     implicit object DigesterMonoidHack extends scalaz.Monoid[Digester] {
       /** this one contains the MessageDigest */
       override def zero =
         Consumer()
 
-      override def append(f1: Digester, f2: => Digester) = (f1, f2) match {
-        case (Consumer(), Consumer())      => throw new UnsupportedOperationException("cannot reduce two consumers!")
-        case (c @ Consumer(), Data(bytes)) => c + bytes
-        case (Data(bytes), c @ Consumer()) => c + bytes
-        case (Data(b1), Data(b2))          => Data(b1 ++ b2) // append the data
-      }
+      override def append(f1: Digester, f2: => Digester) =
+        (f1, f2) match {
+          case (c @ Consumer(), Data(bytes)) => c + bytes
+          case (Data(bytes), c @ Consumer()) => c + bytes
+          case (Data(b1), Data(b2))          => Data(b1 ++ b2) // append the data
+          case (Consumer(), Consumer())      => throw new UnsupportedOperationException("cannot reduce two consumers!")
+        }
     }
   }
 

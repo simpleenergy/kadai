@@ -7,7 +7,7 @@ import scalaz.syntax.show._
 import Result._
 
 /**
- * Contains Base16 and Base32 encoding support, including as compile-time constants. eg:
+ * Contains Base16 and Base32 (human-readable variant) encoding support, including as compile-time constants. eg:
  *
  * {{{
  * val a: BigInt = b16"ac60730edd01d21d3a367b638b5549c3b8fe2339"
@@ -43,11 +43,13 @@ object Encoding {
   }
 
   implicit class Base16EncodedBigIntConstant(sc: StringContext) {
-    def b16(): BigInt = macro Macro.Base16.encode
+    def b16(): BigInt = 
+      macro Macro.Base16.encode
   }
 
   implicit class Base32EncodedBigIntConstant(sc: StringContext) {
-    def b32(): BigInt = macro Macro.Base32.encode
+    def b32(): BigInt = 
+      macro Macro.Base32.encode
   }
 
   /**
@@ -56,11 +58,13 @@ object Encoding {
   private[Encoding] object Macro {
 
     object Base16 {
-      def encode(c: Context)(): c.Expr[BigInt] = Common.impl(c)(Encoding.B16.toBigInt, "Base16")
+      def encode(c: Context)(): c.Expr[BigInt] = 
+        Common.impl(c)(Encoding.B16.toBigInt, "Base16")
     }
 
     object Base32 {
-      def encode(c: Context)(): c.Expr[BigInt] = Common.impl(c)(Encoding.B32.toBigInt, "Base32")
+      def encode(c: Context)(): c.Expr[BigInt] = 
+        Common.impl(c)(Encoding.B32.toBigInt, "Base32")
     }
 
     object Common {
