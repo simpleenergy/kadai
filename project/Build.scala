@@ -64,44 +64,52 @@ object KadaiBuild extends Build {
       )
     , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
     , addCompilerPlugin("org.scala-lang.plugins" % "macro-paradise" % "2.0.0-SNAPSHOT" cross CrossVersion.full)
+    , publishTo in ThisBuild := 
+        Some("releases" at "https://maven.atlassian.com/content/groups/public/")
     )
 
-  lazy val core = Project(id = "core"
-  , base = file("core")
-  , settings = standardSettings
-  )
+  lazy val core = 
+    Project(id = "core"
+    , base = file("core")
+    , settings = standardSettings
+    )
 
-  lazy val logging = Project(id = "logging"
-  , base = file("logging")
-  , settings = standardSettings
-  ).dependsOn(core)
+  lazy val logging =
+    Project(id = "logging"
+    , base = file("logging")
+    , settings = standardSettings
+    ).dependsOn(core)
 
-  lazy val cmdopts = Project(id = "cmdopts"
-  , base = file("cmdopts")
-  , settings = standardSettings
-  ).dependsOn(core)
+  lazy val cmdopts =
+    Project(id = "cmdopts"
+    , base = file("cmdopts")
+    , settings = standardSettings
+    ).dependsOn(core)
 
-  lazy val config = Project(id = "config"
-  , base = file("config")
-  , settings = standardSettings
-  ).dependsOn(core, logging)
+  lazy val config = 
+    Project(id = "config"
+    , base = file("config")
+    , settings = standardSettings
+    ).dependsOn(core, logging)
 
-  lazy val concurrent = Project(id = "concurrent"
-  , base = file("concurrent")
-  , settings = standardSettings
-  ).dependsOn(config)
+  lazy val concurrent = 
+    Project(id = "concurrent"
+    , base = file("concurrent")
+    , settings = standardSettings
+    ).dependsOn(config)
 
   lazy val hash = Project(id = "hash"
   , base = file("hash")
   , settings = standardSettings
   ).dependsOn(core)
 
-  lazy val all = Project(id = "all"
-  , base = file(".")
-  , settings = standardSettings
-  ) aggregate (
-    core, config, logging, cmdopts, concurrent, hash
-  ) dependsOn (
-    core, config, logging, cmdopts, concurrent, hash
-  )
+  lazy val all = 
+    Project(id = "all"
+    , base = file(".")
+    , settings = standardSettings
+    ) aggregate (
+      core, config, logging, cmdopts, concurrent, hash
+    ) dependsOn (
+      core, config, logging, cmdopts, concurrent, hash
+    )
 }
