@@ -16,17 +16,12 @@ import sbt._, Keys._
 import sbtrelease.ReleasePlugin._
 
 object KadaiBuild extends Build {
-  lazy val projectVersion = "1.1.0-SNAPSHOT"
-
-  lazy val mavenLocal = Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
-
   lazy val standardSettings = 
     Defaults.defaultSettings ++ 
     releaseSettings ++ // sbt-release
     net.virtualvoid.sbt.graph.Plugin.graphSettings ++ // dependency plugin settings 
     Seq[Project.Setting[_]] (
       organization := "io.kadai"
-    , version := projectVersion
     , licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
     , homepage := Some(url("https://bitbucket.org/atlassian/kadai"))
     , pomExtra := (
