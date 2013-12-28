@@ -30,13 +30,12 @@ trait ResultInstances {
   }
 
   implicit val EachResult = new Each[Result] {
-    def each[A](fa: Result[A])(f: A => Unit) = { fa map f; () }
+    def each[A](fa: Result[A])(f: A => Unit) = 
+      fa.fold(_ => (), f)
   }
 
   /** Evaluate the given value, which might throw an exception. */
   def catchingToResult[A](a: => A): Result[A] =
     try a.right
-    catch {
-      case NonFatal(e) => e.invalidResult
-    }
+    catch { case NonFatal(e) => e.invalidResult }
 }

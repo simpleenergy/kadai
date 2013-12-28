@@ -32,7 +32,7 @@ object Invalid {
     }
     override def hashCode = x.getClass.hashCode + Option(x.getMessage).hashCode
   }
-  case class Composite(l: Invalid, r: Invalid) extends Invalid
+  case class Composite(is: NonEmptyList[Invalid]) extends Invalid
   object Zero extends Invalid
 
   trait ConvertTo {
@@ -45,10 +45,10 @@ object Invalid {
     val newline = Cord(System getProperty "line.separator")
     override def show(inv: Invalid) =
       inv match {
-        case Invalid.Message(m)      => m.show
-        case Invalid.Err(e)          => e.show
-        case Invalid.Composite(l, r) => l.show ++ newline ++ r.show
-        case Invalid.Zero            => "unknown".show
+        case Invalid.Message(m)   => m.show
+        case Invalid.Err(e)       => e.show
+        case Invalid.Composite(l) => l.show
+        case Invalid.Zero         => "unknown".show
       }
   }
 
@@ -58,12 +58,15 @@ object Invalid {
 
   implicit val InvalidMonoid = new Monoid[Invalid] {
     def zero = Zero
-    def append(l: Invalid, r: => Invalid) =
-      (l, r) match {
-        case (Zero, Zero) => Zero
-        case (l, Zero)    => l
-        case (Zero, r)    => r
-        case (l, r)       => Composite(l, r)
+    def append(a1: Invalid, a2: => Invalid) =
+      (a1, a2) match {
+        case (Zero, Zero)                   => Zero
+        case (l, Zero)                      => l
+        case (Zero, r)                      => r
+        case (Composite(as), Composite(bs)) => Composite(as |+| bs)
+        case (Composite(ls), r)             => Composite(ls |+| NonEmptyList(r))
+        case (a, Composite(rs))             => Composite(NonEmptyList(a) |+| rs)
+        case (l, r)                         => Composite(NonEmptyList(l, r))
       }
   }
 }
