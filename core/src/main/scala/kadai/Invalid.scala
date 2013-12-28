@@ -45,10 +45,10 @@ object Invalid {
     val newline = Cord(System getProperty "line.separator")
     override def show(inv: Invalid) =
       inv match {
-        case Invalid.Message(m)   => m.show
-        case Invalid.Err(e)       => e.show
-        case Invalid.Composite(l) => l.show
-        case Invalid.Zero         => "unknown".show
+        case Message(m)   => m.show
+        case Err(e)       => e.show
+        case Composite(l) => l.show
+        case Zero         => "unknown".show
       }
   }
 
@@ -65,7 +65,7 @@ object Invalid {
         case (Zero, r)                      => r
         case (Composite(as), Composite(bs)) => Composite(as |+| bs)
         case (Composite(ls), r)             => Composite(ls |+| NonEmptyList(r))
-        case (a, Composite(rs))             => Composite(NonEmptyList(a) |+| rs)
+        case (l, Composite(rs))             => Composite(NonEmptyList(l) |+| rs)
         case (l, r)                         => Composite(NonEmptyList(l, r))
       }
   }
