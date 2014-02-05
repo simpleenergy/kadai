@@ -14,6 +14,6 @@
 
 name := "kadai-logging"
 
-libraryDependencies in ThisBuild ++= Seq(
+libraryDependencies ++= Seq(
   "org.apache.logging.log4j"  % "log4j-core"  % "2.0-beta9"
 )

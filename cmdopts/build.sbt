@@ -14,4 +14,6 @@
 
 name := "kadai-cmdopts"
 
-libraryDependencies in ThisBuild ++= Seq()
+libraryDependencies ++= Seq(
+  "com.chuusai"            %% "shapeless"                 % "1.2.4"
+)

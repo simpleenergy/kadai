@@ -13,5 +13,3 @@
 // limitations under the License.
 
 name := "kadai-concurrent"
-
-libraryDependencies in ThisBuild ++= Seq()
