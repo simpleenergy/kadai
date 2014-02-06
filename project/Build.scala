@@ -16,6 +16,26 @@ import sbt._, Keys._
 import sbtrelease.ReleasePlugin._
 
 object KadaiBuild extends Build {
+  // "-language:_"
+  //   Seq( "-Xlog-free-terms")
+
+  val scalacFlags =  Seq(
+    "-deprecation"
+  , "-encoding", "UTF-8" // yes, this is 2 args
+  , "-feature"
+  , "-language:existentials"
+  , "-language:experimental.macros"
+  , "-language:higherKinds"
+  , "-language:implicitConversions"
+  , "-unchecked"
+  , "-Xfatal-warnings"
+  , "-Xlint"
+  , "-Yno-adapted-args"
+  , "-Ywarn-all"
+  , "-Ywarn-dead-code" // N.B. doesn't work well with the ??? hole
+  , "-Ywarn-numeric-widen"
+  , "-Ywarn-value-discard"     
+  )
   lazy val standardSettings = 
     Defaults.defaultSettings ++ 
     releaseSettings ++ // sbt-release
@@ -45,7 +65,7 @@ object KadaiBuild extends Build {
       )
     , pomIncludeRepository := { (repo: MavenRepository) => false } // no repositories in the pom
     , scalaVersion := "2.10.3"
-    , scalacOptions := Seq("-deprecation", "-unchecked", "-feature", "-language:_", "-Ywarn-value-discard",  "-Xfatal-warnings", "-Xlog-free-terms")
+    , scalacOptions ++= scalacFlags 
     , javacOptions ++= Seq("-encoding", "UTF-8")
     , resolvers ++= Seq(
         "Tools Snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"

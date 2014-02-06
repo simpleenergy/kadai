@@ -6,6 +6,6 @@ package com.typesafe.config.impl
  */
 object TypesafeConfigWhacker {
 
-  def flushSystemPropertiesCache =
+  def flushSystemPropertiesCache(): Unit =
     ConfigImpl.reloadSystemPropertiesConfig
 }

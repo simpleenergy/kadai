@@ -33,7 +33,9 @@ class Backoff(range: Int) extends (Int => Unit) {
   private val rnd = util.Random
 
   @throws(classOf[InterruptedException])
-  def apply(i: Int) {
-    Thread.sleep(rnd.nextInt(range * i))
+  def apply(i: Int): Unit = {
+    Thread.sleep {
+      rnd.nextInt(range * i).toLong
+    }
   }
 }
