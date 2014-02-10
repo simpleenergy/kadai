@@ -40,7 +40,7 @@ object KadaiBuild extends Build {
     Defaults.defaultSettings ++ 
     releaseSettings ++ // sbt-release
     net.virtualvoid.sbt.graph.Plugin.graphSettings ++ // dependency plugin settings 
-    Seq[Project.Setting[_]] (
+    Seq[Def.Setting[_]] (
       organization := "io.kadai"
     , licenses := Seq("Apache2" -> url("https://bitbucket.org/atlassian/kadai/raw/master/LICENSE"))
     , homepage := Some(url("https://bitbucket.org/atlassian/kadai"))
@@ -79,10 +79,12 @@ object KadaiBuild extends Build {
       )
     , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
     , addCompilerPlugin("org.scala-lang.plugins" % "macro-paradise" % "2.0.0-SNAPSHOT" cross CrossVersion.full)
+    //, addCompilerPlugin("org.brianmckenna"      %% "wartremover"    % "0.7")
+    //, scalacOptions in (Compile, compile) += "-P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe"
     , publishTo in ThisBuild := 
         Some("releases" at "https://maven.atlassian.com/content/groups/public/")
     )
-
+ 
   lazy val core = 
     Project(id = "core"
     , base = file("core")
