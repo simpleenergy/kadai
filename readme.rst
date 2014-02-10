@@ -26,3 +26,13 @@ The modules are:
     simple and type-safe Command Line Option parser
 :logging:
     lightweight Scala friendly logging library
+
+Download
+--------
+To use this library from SBT you need to add the following resolver:
+
+    resolvers += "atlassian-public" at "https://maven.atlassian.com/content/repositories/public/"
+
+It has the groupId: `io.kadai`
+
+There is an artifactId: `kadai` that combines all modules or you can depend on one directly with `kadai-logging`, `kadai-cmdopts` etc. Note:, there is a scala-version qualifier.
