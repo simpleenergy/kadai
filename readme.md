@@ -34,11 +34,11 @@ simple and type-safe Command Line Option parser
 
 lightweight Scala friendly logging library, currently uses log4j2 under the covers
 
-## hash
+### hash
 
 Tools for hashing bytes
 
-## Download
+# Download
 
 To use this library from SBT you need to add the following resolver:
 
