@@ -18,6 +18,8 @@ class AttemptSpec extends ScalaCheckSpec {
     be safely mappable                       $safelyMap
     be safely flatMappable                   $safelyFlatMap
     have a law abiding Monad                 ${checkAll(monad.laws[Attempt])}
+    have a law abiding Equal                 ${checkAll(equal.laws[Attempt[Int]])}
+    have a law abiding Monoid                ${checkAll(monoid.laws[Attempt[Int]])}
   """
 
   def fromString =
