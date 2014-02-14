@@ -41,7 +41,7 @@ object Invalid {
     final def invalidNel[A]: NonEmptyList[Invalid] = invalid.wrapNel
   }
 
-  implicit val ShowInvalid: Show[Invalid] = new Show[Invalid] {
+  implicit object ShowInvalid extends Show[Invalid] {
     val newline = Cord(System getProperty "line.separator")
     override def show(inv: Invalid) =
       inv match {
@@ -52,11 +52,11 @@ object Invalid {
       }
   }
 
-  implicit val EqualInvalid = new Equal[Invalid] {
+  implicit object EqualInvalid extends Equal[Invalid] {
     def equal(a: Invalid, b: Invalid) = a == b
   }
 
-  implicit val InvalidMonoid = new Monoid[Invalid] {
+  implicit object InvalidMonoid extends Monoid[Invalid] {
     def zero = Zero
     def append(a1: Invalid, a2: => Invalid) =
       (a1, a2) match {
