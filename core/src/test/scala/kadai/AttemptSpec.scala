@@ -36,13 +36,13 @@ class AttemptSpec extends ScalaCheckSpec {
     }
 
   def safely =
-    Prop.forAll { _: Int => checkSafe { identity } }
+    checkSafe { identity }
 
   def safelyMap =
-    Prop.forAll { _: Int => checkSafe { _.map { _ + 11 } } }
+    checkSafe { _.map { _ + 11 } }
 
   def safelyFlatMap =
-    Prop.forAll { _: Int => checkSafe { _.flatMap { _ => Attempt.exception(new Error) } } }
+    checkSafe { _.flatMap { _ => Attempt.exception(new Error) } }
 
   private def checkSafe(f: Attempt[Int] => Attempt[Int]) =
     new RuntimeException |> { ex =>
