@@ -1,7 +1,7 @@
 package kadai
 
 import util.control.NonFatal
-import scalaz.{ Equal, Isomorphism, Monad, Monoid, \/ }
+import scalaz.{ Equal, Isomorphism, IsomorphismEqual, IsomorphismMonad, IsomorphismMonoid, Monad, Monoid, \/ }
 import scalaz.syntax.id._
 
 /**
@@ -14,7 +14,7 @@ case class Attempt[+A](run: Invalid \/ A) {
     Attempt(run map f)
 
   def flatMap[B](f: A => Attempt[B]): Attempt[B] =
-    Attempt(run flatMap { a => f(a).run })
+    Attempt(run flatMap { f(_).run })
 }
 
 object Attempt {
@@ -42,23 +42,23 @@ object Attempt {
     def from[A](ga: Result[A]) = Attempt(ga)
   }
 
-  implicit object AttemptMonad extends scalaz.IsomorphismMonad[Attempt, Result] {
+  implicit object AttemptMonad extends IsomorphismMonad[Attempt, Result] {
     def G = Monad[Result]
     def iso = AttemptFunctorIsomorphism
   }
 
-  def AttemptSetIsomorphism[A] = new Isomorphism.IsoSet[Attempt[A], Result[A]] {
+  implicit def AttemptMonoid[A: Monoid]: Monoid[Attempt[A]] = new IsomorphismMonoid[Attempt[A], Result[A]] {
+    val G = Monoid[Result[A]]
+    val iso: Isomorphism.IsoSet[Attempt[A], Result[A]] = AttemptSetIsomorphism
+  }
+
+  implicit def AttemptEqual[A: Equal] : Equal[Attempt[A]] = new IsomorphismEqual[Attempt[A], Result[A]] {
+    val G = Equal[Result[A]]
+    val iso: Isomorphism.IsoSet[Attempt[A], Result[A]] = AttemptSetIsomorphism
+  }
+
+  private def AttemptSetIsomorphism[A] = new Isomorphism.IsoSet[Attempt[A], Result[A]] {
     def to = AttemptFunctorIsomorphism.to[A]
     def from = AttemptFunctorIsomorphism.from[A]
-  }
-
-  implicit def AttemptMonoid[A: Monoid]: Monoid[Attempt[A]] = new scalaz.IsomorphismMonoid[Attempt[A], Result[A]] {
-    def G = Monoid[Result[A]]
-    def iso = AttemptSetIsomorphism
-  }
-
-  implicit def AttemptEqual[A: Equal] : Equal[Attempt[A]] = new scalaz.IsomorphismEqual[Attempt[A], Result[A]] {
-    def G = Equal[Result[A]]
-    def iso = AttemptSetIsomorphism
   }
 }
