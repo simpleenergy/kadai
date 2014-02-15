@@ -1,13 +1,23 @@
 package kadai
 
-import util.control.NonFatal
 import scalaz.{ Equal, Isomorphism, IsomorphismEqual, IsomorphismMonad, IsomorphismMonoid, Monad, Monoid, \/ }
 import scalaz.syntax.id._
 
 /**
- * Represents the result of an action, which may be the result itself or an Invalid (error)
- * @param run The result (either the result itself or Invalid)
- * @tparam A The type of the data to be returned from the action
+ * Represents the result of an action, which may be the result itself or an Invalid (error).
+ * 
+ * An unsafe operation may be attempted using `Attempt.safe(unsafeCall)` for instance:
+ * 
+ * {{{
+ * val r: Attempt[String] = for {
+ *   a <- Attempt.safe { throw new RuntimeException("oh noes!") }
+ *   b <- Attempt.ok("should be ok!")
+ * } yield b
+ * }}}
+ * 
+ * will result in an Attempt that holds an Invalid.Err with the RuntimeException in it.
+ * 
+ * This class does not – and will not – auto-magically catch exceptions for you in `map`/`flatMap`.
  */
 case class Attempt[+A](run: Invalid \/ A) {
   def map[B](f: A => B): Attempt[B] =
@@ -35,16 +45,27 @@ object Attempt {
   /** Runs the given operation in try/catch. */
   def safe[A](op: => A): Attempt[A] =
     try ok(op)
-    catch { case NonFatal(t) => exception(t) }
+    catch { case util.control.NonFatal(t) => exception(t) }
 
-  object AttemptFunctorIsomorphism extends Isomorphism.IsoFunctorTemplate[Attempt, Result] {
+  //
+  // typeclasses
+  //
+
+  /**
+   * Attempt <~> Result is the IsoFunctor, or NaturalTransformation
+   * Isomophism, between Attempt and its underlying Result.
+   *
+   * We use this to remove all the boilerplate from the typeclass
+   * instance declarations, and just use Result's definitions.
+   */
+  object AttemptIso extends Isomorphism.IsoFunctorTemplate[Attempt, Result] {
     def to[A](fa: Attempt[A]) = fa.run
     def from[A](ga: Result[A]) = Attempt(ga)
   }
 
   implicit object AttemptMonad extends IsomorphismMonad[Attempt, Result] {
-    def G = Monad[Result]
-    def iso = AttemptFunctorIsomorphism
+    val G = Monad[Result]
+    def iso = AttemptIso
   }
 
   implicit def AttemptMonoid[A: Monoid]: Monoid[Attempt[A]] = new IsomorphismMonoid[Attempt[A], Result[A]] {
@@ -52,13 +73,13 @@ object Attempt {
     val iso: Isomorphism.IsoSet[Attempt[A], Result[A]] = AttemptSetIsomorphism
   }
 
-  implicit def AttemptEqual[A: Equal] : Equal[Attempt[A]] = new IsomorphismEqual[Attempt[A], Result[A]] {
+  implicit def AttemptEqual[A: Equal]: Equal[Attempt[A]] = new IsomorphismEqual[Attempt[A], Result[A]] {
     val G = Equal[Result[A]]
     val iso: Isomorphism.IsoSet[Attempt[A], Result[A]] = AttemptSetIsomorphism
   }
 
   private def AttemptSetIsomorphism[A] = new Isomorphism.IsoSet[Attempt[A], Result[A]] {
-    def to = AttemptFunctorIsomorphism.to[A]
-    def from = AttemptFunctorIsomorphism.from[A]
+    def to = AttemptIso.to[A]
+    def from = AttemptIso.from[A]
   }
 }
