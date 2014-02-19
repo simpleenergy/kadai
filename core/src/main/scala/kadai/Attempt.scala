@@ -25,6 +25,9 @@ case class Attempt[+A](run: Invalid \/ A) {
 
   def flatMap[B](f: A => Attempt[B]): Attempt[B] =
     Attempt(run flatMap { f(_).run })
+
+  def lift[B](fn: Invalid \/ A => Invalid \/ B): Attempt[B] =
+    Attempt(fn(run))
 }
 
 object Attempt {
