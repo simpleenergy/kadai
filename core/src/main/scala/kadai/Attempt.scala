@@ -20,18 +20,21 @@ import scalaz.syntax.std.option._
  *
  * This class does not – and will not – auto-magically catch exceptions for you in `map`/`flatMap`.
  */
-case class Attempt[+A](run: Invalid \/ A) {
+case class Attempt[+A](run: Result[A]) {
   def map[B](f: A => B): Attempt[B] =
     Attempt(run map f)
 
   def flatMap[B](f: A => Attempt[B]): Attempt[B] =
     Attempt(run flatMap { f(_).run })
 
-  def toOr: Invalid \/ A =
+  def toOr: Result[A] =
     run
 
   def toOption: Option[A] =
     run.toOption
+
+  def lift[B](fn: Result[A] => Result[B]): Attempt[B] =
+    Attempt(fn(run))
 }
 
 object Attempt {
