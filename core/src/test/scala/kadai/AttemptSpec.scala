@@ -1,6 +1,8 @@
 package kadai
 
 import org.scalacheck.{ Arbitrary, Prop }
+import scalaz.Equal
+import scalaz.scalacheck.ScalazArbitrary._
 import scalaz.scalacheck.ScalazProperties._
 import scalaz.std.anyVal._
 import scalaz.syntax.id._
@@ -8,6 +10,7 @@ import scalaz.syntax.id._
 class AttemptSpec extends ScalaCheckSpec {
   import Result._
   import ArbitraryAttempt._
+  import ArbitraryResult.ArbitraryInvalid
 
   def is = s2"""
   Attempt should
@@ -17,6 +20,7 @@ class AttemptSpec extends ScalaCheckSpec {
     be safely creatable from exception       $safely
     be safely mappable                       $safelyMap
     be safely flatMappable                   $safelyFlatMap
+    run lifted Result functions              $liftResultFn
     have a law abiding Monad                 ${checkAll(monad.laws[Attempt])}
     have a law abiding Equal                 ${checkAll(equal.laws[Attempt[Int]])}
     have a law abiding Monoid                ${checkAll(monoid.laws[Attempt[Int]])}
@@ -49,6 +53,11 @@ class AttemptSpec extends ScalaCheckSpec {
   private def checkSafe(f: Attempt[Int] => Attempt[Int]) =
     new RuntimeException |> { ex =>
       f { Attempt.safe { throw ex } } must be equalTo Attempt(ex.invalidResult)
+    }
+
+  def liftResultFn =
+    Prop.forAll { (fa: Attempt[Int], f: Result[Int] => Result[Int]) =>
+      Equal[Attempt[Int]].equal(Attempt(f(fa.run)), fa.lift(f)) must beTrue
     }
 }
 
