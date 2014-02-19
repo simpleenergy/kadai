@@ -1,22 +1,23 @@
 package kadai
 
-import scalaz.{ Equal, Isomorphism, IsomorphismEqual, IsomorphismMonad, IsomorphismMonoid, Monad, Monoid, \/ }
+import scalaz.{ Equal, Isomorphism, IsomorphismEqual, IsomorphismMonad, IsomorphismMonoid, Monad, Monoid, ~>, \/ }
+import scalaz.effect.IO
 import scalaz.syntax.id._
-
+import scalaz.syntax.std.option._
 /**
  * Represents the result of an action, which may be the result itself or an Invalid (error).
- * 
+ *
  * An unsafe operation may be attempted using `Attempt.safe(unsafeCall)` for instance:
- * 
+ *
  * {{{
  * val r: Attempt[String] = for {
  *   a <- Attempt.safe { throw new RuntimeException("oh noes!") }
  *   b <- Attempt.ok("should be ok!")
  * } yield b
  * }}}
- * 
+ *
  * will result in an Attempt that holds an Invalid.Err with the RuntimeException in it.
- * 
+ *
  * This class does not – and will not – auto-magically catch exceptions for you in `map`/`flatMap`.
  */
 case class Attempt[+A](run: Invalid \/ A) {
@@ -25,6 +26,12 @@ case class Attempt[+A](run: Invalid \/ A) {
 
   def flatMap[B](f: A => Attempt[B]): Attempt[B] =
     Attempt(run flatMap { f(_).run })
+
+  def toOr: Invalid \/ A =
+    run
+
+  def toOption: Option[A] =
+    run.toOption
 }
 
 object Attempt {
@@ -47,6 +54,11 @@ object Attempt {
     try ok(op)
     catch { case util.control.NonFatal(t) => exception(t) }
 
+  val i = 1.some
+  
+  def safely[A](op: IO[A]): IO[Attempt[A]] =
+    op.catchSomeLeft { _.invalid.some }.map { Attempt.apply }
+
   //
   // typeclasses
   //
@@ -61,6 +73,14 @@ object Attempt {
   object AttemptIso extends Isomorphism.IsoFunctorTemplate[Attempt, Result] {
     def to[A](fa: Attempt[A]) = fa.run
     def from[A](ga: Result[A]) = Attempt(ga)
+  }
+
+  object ToOr extends (Attempt ~> Result) {
+    def apply[A](fa: Attempt[A]): Result[A] = fa.toOr
+  }
+
+  object ToOption extends (Attempt ~> Option) {
+    def apply[A](fa: Attempt[A]): Option[A] = fa.toOption
   }
 
   implicit object AttemptMonad extends IsomorphismMonad[Attempt, Result] {
