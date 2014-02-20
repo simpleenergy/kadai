@@ -5,9 +5,11 @@ import scalaz.Equal
 import scalaz.scalacheck.ScalazArbitrary._
 import scalaz.scalacheck.ScalazProperties._
 import scalaz.std.anyVal._
+import scalaz.std.option._
 import scalaz.syntax.id._
+import scalaz.syntax.std.option._
 
-class AttemptSpec extends ScalaCheckSpec {
+class AttemptSpec extends ScalaCheckSpec with EqualSyntax {
   import Result._
   import ArbitraryAttempt._
   import ArbitraryResult.ArbitraryInvalid
@@ -21,6 +23,8 @@ class AttemptSpec extends ScalaCheckSpec {
     be safely mappable                       $safelyMap
     be safely flatMappable                   $safelyFlatMap
     run lifted Result functions              $liftResultFn
+    convert to option                        $toOption
+    convert to disjunction                   $toOr
     have a law abiding Monad                 ${checkAll(monad.laws[Attempt])}
     have a law abiding Equal                 ${checkAll(equal.laws[Attempt[Int]])}
     have a law abiding Monoid                ${checkAll(monoid.laws[Attempt[Int]])}
@@ -28,17 +32,17 @@ class AttemptSpec extends ScalaCheckSpec {
 
   def fromString =
     Prop.forAll { s: String =>
-      Attempt.fail(s) must be equalTo Attempt(s.invalidResult)
+      Attempt.fail(s) === Attempt(s.invalidResult)
     }
 
   def fromThrowable =
     Prop.forAll { t: Throwable =>
-      Attempt.exception(t) must be equalTo Attempt(t.invalidResult)
+      Attempt.exception(t) === Attempt(t.invalidResult)
     }
 
   def fromAny =
     Prop.forAll { a: Int =>
-      Attempt.ok(a) must be equalTo Attempt(a.right)
+      Attempt.ok(a) === Attempt(a.right)
     }
 
   def safely =
@@ -57,7 +61,17 @@ class AttemptSpec extends ScalaCheckSpec {
 
   def liftResultFn =
     Prop.forAll { (fa: Attempt[Int], f: Result[Int] => Result[Int]) =>
-      Equal[Attempt[Int]].equal(Attempt(f(fa.run)), fa.lift(f)) must beTrue
+      Attempt(f(fa.run)) mustEqual fa.lift(f)
+    }
+
+  def toOr =
+    Prop.forAll { i: Int =>
+      (Attempt.ok(i).toOr mustEqual i.right) and (Attempt.ToOr(Attempt.ok(i)) mustEqual i.right)
+    }
+
+  def toOption =
+    Prop.forAll { i: Int =>
+      (Attempt.ok(i).toOption mustEqual i.some) and (Attempt.ToOption(Attempt.ok(i)) mustEqual i.some)
     }
 }
 
