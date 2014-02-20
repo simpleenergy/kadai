@@ -4,6 +4,7 @@ import scalaz.{ Equal, Isomorphism, IsomorphismEqual, IsomorphismMonad, Isomorph
 import scalaz.effect.IO
 import scalaz.syntax.id._
 import scalaz.syntax.std.option._
+
 /**
  * Represents the result of an action, which may be the result itself or an Invalid (error).
  *
@@ -20,20 +21,20 @@ import scalaz.syntax.std.option._
  *
  * This class does not – and will not – auto-magically catch exceptions for you in `map`/`flatMap`.
  */
-case class Attempt[+A](run: Result[A]) {
+case class Attempt[+A](run: Invalid \/ A) {
   def map[B](f: A => B): Attempt[B] =
     Attempt(run map f)
 
   def flatMap[B](f: A => Attempt[B]): Attempt[B] =
     Attempt(run flatMap { f(_).run })
 
-  def toOr: Result[A] =
+  def toOr: Invalid \/ A =
     run
 
   def toOption: Option[A] =
     run.toOption
 
-  def lift[B](fn: Result[A] => Result[B]): Attempt[B] =
+  def lift[B](fn: Invalid \/ A => Invalid \/ B): Attempt[B] =
     Attempt(fn(run))
 }
 
@@ -75,11 +76,11 @@ object Attempt {
    */
   object AttemptIso extends Isomorphism.IsoFunctorTemplate[Attempt, Result] {
     def to[A](fa: Attempt[A]) = fa.run
-    def from[A](ga: Result[A]) = Attempt(ga)
+    def from[A](ga: Invalid \/ A) = Attempt(ga)
   }
 
   object ToOr extends (Attempt ~> Result) {
-    def apply[A](fa: Attempt[A]): Result[A] = fa.toOr
+    def apply[A](fa: Attempt[A]): Invalid \/ A = fa.toOr
   }
 
   object ToOption extends (Attempt ~> Option) {
@@ -91,17 +92,17 @@ object Attempt {
     def iso = AttemptIso
   }
 
-  implicit def AttemptMonoid[A: Monoid]: Monoid[Attempt[A]] = new IsomorphismMonoid[Attempt[A], Result[A]] {
-    val G = Monoid[Result[A]]
-    val iso: Isomorphism.IsoSet[Attempt[A], Result[A]] = AttemptSetIsomorphism
+  implicit def AttemptMonoid[A: Monoid]: Monoid[Attempt[A]] = new IsomorphismMonoid[Attempt[A], Invalid \/ A] {
+    val G = Monoid[Invalid \/ A]
+    val iso: Isomorphism.IsoSet[Attempt[A], Invalid \/ A] = AttemptSetIsomorphism
   }
 
-  implicit def AttemptEqual[A: Equal]: Equal[Attempt[A]] = new IsomorphismEqual[Attempt[A], Result[A]] {
-    val G = Equal[Result[A]]
-    val iso: Isomorphism.IsoSet[Attempt[A], Result[A]] = AttemptSetIsomorphism
+  implicit def AttemptEqual[A: Equal]: Equal[Attempt[A]] = new IsomorphismEqual[Attempt[A], Invalid \/ A] {
+    val G = Equal[Invalid \/ A]
+    val iso: Isomorphism.IsoSet[Attempt[A], Invalid \/ A] = AttemptSetIsomorphism
   }
 
-  private def AttemptSetIsomorphism[A] = new Isomorphism.IsoSet[Attempt[A], Result[A]] {
+  private def AttemptSetIsomorphism[A] = new Isomorphism.IsoSet[Attempt[A], Invalid \/ A] {
     def to = AttemptIso.to[A]
     def from = AttemptIso.from[A]
   }
