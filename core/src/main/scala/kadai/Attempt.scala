@@ -20,6 +20,8 @@ import scalaz.syntax.std.option._
  * will result in an Attempt that holds an Invalid.Err with the RuntimeException in it.
  *
  * This class does not – and will not – auto-magically catch exceptions for you in `map`/`flatMap`.
+ * 
+ * @since 1.2
  */
 case class Attempt[+A](run: Invalid \/ A) {
   def map[B](f: A => B): Attempt[B] =
@@ -36,6 +38,13 @@ case class Attempt[+A](run: Invalid \/ A) {
 
   def lift[B](fn: Invalid \/ A => Invalid \/ B): Attempt[B] =
     Attempt(fn(run))
+
+  /** 
+   * Catamorphism. Run the first given function if left, otherwise, the second given function.
+   * @since 1.3
+   */
+  def fold[B](l: => Invalid => B, r: A => B): B =
+    run.fold(l, r)
 }
 
 object Attempt {
