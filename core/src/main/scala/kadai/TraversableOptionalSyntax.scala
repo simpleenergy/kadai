@@ -18,8 +18,6 @@ package kadai
 import collection.GenTraversableLike
 import collection.generic.IsTraversableLike
 import scalaz.std.option._
-import scalaz.syntax.id._
-import scalaz.syntax.std.boolean._
 import scalaz.syntax.std.option._
 
 /**
@@ -36,8 +34,10 @@ trait TraversableOptional {
    */
   implicit class NotEmptySyntax[A, Repr: IsTraversableLike](rep: Repr) {
     def notEmpty: Option[Repr] =
-      implicitly[IsTraversableLike[Repr]].conversion(rep).isEmpty ?
-        none[Repr] | rep.some
+      if (implicitly[IsTraversableLike[Repr]].conversion(rep).isEmpty)
+        none[Repr] 
+      else 
+        rep.some
   }
 
   /**
