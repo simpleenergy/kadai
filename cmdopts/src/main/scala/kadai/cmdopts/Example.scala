@@ -16,9 +16,7 @@
 package kadai
 package cmdopts
 
-import shapeless.nat._
-import scalaz._
-import Scalaz._
+import nat._
 
 object Example extends App {
   case class OneThing(s: String)
