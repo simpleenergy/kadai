@@ -64,7 +64,7 @@ object KadaiBuild extends Build {
           </distributionManagement>
       )
     , pomIncludeRepository := { (repo: MavenRepository) => false } // no repositories in the pom
-    , scalaVersion := "2.10.3"
+    , scalaVersion := "2.10.4"
     , scalacOptions ++= scalacFlags 
     , javacOptions ++= Seq("-encoding", "UTF-8")
     , resolvers ++= Seq(
