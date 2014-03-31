@@ -14,6 +14,7 @@
 package kadai
 package cmdopts
 
+import shapeless.nat._
 import org.specs2.mutable.Specification
 import scalaz._
 import Scalaz._

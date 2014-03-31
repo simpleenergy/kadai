@@ -17,6 +17,11 @@ package kadai
 package cmdopts
 
 import shapeless._
+import shapeless.nat._
+import shapeless.ops.function.FnToProduct
+import shapeless.ops.hlist.Length
+import shapeless.ops.traversable.FromTraversable
+import shapeless.ops.nat.ToInt
 import scalaz._
 import Scalaz._
 import util.control.Exception.nonFatalCatch
@@ -41,8 +46,8 @@ import util.control.Exception.nonFatalCatch
 abstract class CmdOpts[T](rawdata: Seq[T]) {
 
   def opt[H <: HList, N <: Nat, F, R](t: T, f: F)(
-    implicit hlister: FnHListerAux[F, H => R],
-    length: LengthAux[H, N],
+    implicit hlister: FnToProduct.Aux[F, H => R],
+    length: Length.Aux[H, N],
     toHList: FromTraversable[H],
     size: ToInt[N]): Option[R] =
     for {
