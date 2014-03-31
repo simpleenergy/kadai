@@ -8,6 +8,8 @@ class TraversableOptionalSpec extends Specification with ScalaCheck {
   TraversableOptionalSyntax should
     add .tailOption                          $addTailOption
     add .headTailOption                      $addHeadTailOption
+    add .initOption                          $addInitOption
+    add .initLastOption                      $addInitLastOption
     add .notEmpty                            $addNotEmpty
   """
 
@@ -22,6 +24,20 @@ class TraversableOptionalSpec extends Specification with ScalaCheck {
     (ls, ls.headTailOption) must beLike {
       case (Nil, None)              => ok
       case (a :: as, Some((b, bs))) => (a === b) and (as === bs)
+    }
+  }
+
+  def addInitOption = Prop.forAll { ls: List[String] =>
+    (ls, ls.initOption) must beLike {
+      case (List(), None) => ok
+      case (as, Some(bs)) => as.init === bs
+    }
+  }
+
+  def addInitLastOption = Prop.forAll { ls: List[String] =>
+    (ls, ls.initLastOption) must beLike {
+      case (Nil, None)         => ok
+      case (as, Some((bs, b))) => (as.last === b) and (as.init === bs)
     }
   }
 

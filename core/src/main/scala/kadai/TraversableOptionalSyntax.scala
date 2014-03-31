@@ -23,37 +23,48 @@ import scalaz.syntax.std.boolean._
 import scalaz.syntax.std.option._
 
 /**
- * Add safe, total methods such as tailOption to Traversables
+ * Add safe, total methods such as tailOption to anything Traversable
  */
 trait TraversableOptional {
 
   /**
    * Add syntax:
-   * 
+   *
    * {{{
    * coll.notEmpty: Option[CollType]
    * }}}
    */
   implicit class NotEmptySyntax[A, Repr: IsTraversableLike](rep: Repr) {
     def notEmpty: Option[Repr] =
-      implicitly[IsTraversableLike[Repr]].conversion(rep).isEmpty ? 
-      none[Repr] | rep.some
+      implicitly[IsTraversableLike[Repr]].conversion(rep).isEmpty ?
+        none[Repr] | rep.some
   }
 
   /**
    * Add syntax:
-   * 
+   *
    * {{{
    * coll.tailOption: Option[CollType]
    * coll.headTailOption: Option[(ElemType, CollType)]
    * }}}
    */
   class TraversableOptionalSyntax[A, Repr](rep: GenTraversableLike[A, Repr]) {
+    private def opt[A](thunk: => A): Option[A] =
+      if (rep.isEmpty) none[A] else thunk.some
+
     def tailOption: Option[Repr] =
-      rep.isEmpty ? none[Repr] | rep.tail.some
+      opt(rep.tail)
 
     def headTailOption: Option[(A, Repr)] =
-      rep.isEmpty ? none[(A, Repr)] | (rep.head -> rep.tail).some
+      opt(rep.head -> rep.tail)
+
+    /** @since 1.4 */
+    def initOption: Option[Repr] =
+      opt(rep.init)
+
+    /** @since 1.4 */
+    def initLastOption: Option[(Repr, A)] =
+      opt(rep.init -> rep.last)
   }
 
   implicit def AddTraversableOptionalSyntax[A, Repr](rep: Repr)(implicit fr: IsTraversableLike[Repr]): TraversableOptionalSyntax[fr.A, Repr] =
