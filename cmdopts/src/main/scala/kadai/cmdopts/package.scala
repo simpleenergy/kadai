@@ -15,10 +15,8 @@
  */
 package kadai
 
-import collection.GenTraversableLike
-import collection.generic.IsTraversableLike
-import scalaz._
-import Scalaz._
+import scalaz.ValidationNel
+import scalaz.syntax.applicative._
 
 package object cmdopts {
 
