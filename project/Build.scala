@@ -78,7 +78,7 @@ object KadaiBuild extends Build {
       , file("NOTICE")  -> "META-INF/NOTICE"
       )
     , credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-    , addCompilerPlugin("org.scala-lang.plugins" % "macro-paradise" % "2.0.0-SNAPSHOT" cross CrossVersion.full)
+    , addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M6" cross CrossVersion.full)
     //, addCompilerPlugin("org.brianmckenna"      %% "wartremover"    % "0.7")
     //, scalacOptions in (Compile, compile) += "-P:wartremover:traverser:org.brianmckenna.wartremover.warts.Unsafe"
     , publishTo in ThisBuild := 
