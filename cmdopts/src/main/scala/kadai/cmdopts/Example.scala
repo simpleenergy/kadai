@@ -16,6 +16,7 @@
 package kadai
 package cmdopts
 
+import shapeless.nat._
 import scalaz._
 import Scalaz._
 
