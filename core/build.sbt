@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "org.scalaz"             %% "scalaz-core"               % "7.0.6"
 , "org.scalaz"             %% "scalaz-effect"             % "7.0.6"
 , "org.scalaz"             %% "scalaz-scalacheck-binding" % "7.0.6"  % "test"
-, "org.scalamacros"        %% "quasiquotes"               % "2.0.0-M6" cross CrossVersion.full
+, "org.scalamacros"        %% "quasiquotes"               % "2.0.0-M6" % "provided" cross CrossVersion.full
 )
 
 libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _)
