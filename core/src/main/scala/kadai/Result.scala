@@ -16,7 +16,7 @@
 package kadai
 
 import scalaz.{ \/, Each, NonEmptyList }
-import scalaz.syntax.id._
+import scalaz.syntax.either._
 import scala.util.control.NonFatal
 
 trait ResultInstances {
@@ -27,11 +27,6 @@ trait ResultInstances {
 
   implicit class AddInvalidToThrowable(x: Throwable) extends Invalid.ConvertTo {
     override def invalid: Invalid = Invalid.Err(x)
-  }
-
-  implicit val EachResult = new Each[Result] {
-    def each[A](fa: Result[A])(f: A => Unit) = 
-      fa.fold(_ => (), f)
   }
 
   /** Evaluate the given value, which might throw an exception. */

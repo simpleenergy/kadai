@@ -16,10 +16,12 @@ name := "kadai"
 
 description := "bootstrap tools for a Scala project"
 
+val specs2Version = "2.3.10-scalaz-7.1.0-M6"
+
 libraryDependencies in ThisBuild ++= Seq(
-  "org.specs2"                        %% "specs2-core"       % "2.3.2"  % "test"
-, "org.specs2"                        %% "specs2-junit"      % "2.3.2"  % "test"
-, "org.specs2"                        %% "specs2-scalacheck" % "2.3.2"  % "test"
-, "org.scalacheck"                    %% "scalacheck"        % "1.10.1" % "test"
+  "org.specs2"                        %% "specs2-core"       % specs2Version  % "test"
+, "org.specs2"                        %% "specs2-junit"      % specs2Version  % "test"
+, "org.specs2"                        %% "specs2-scalacheck" % specs2Version  % "test"
+, "org.scalacheck"                    %% "scalacheck"        % "1.11.3" % "test"
 , "junit"                              % "junit"             % "4.11"   % "test"
 )

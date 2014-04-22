@@ -6,10 +6,11 @@ import scalaz.scalacheck.ScalazArbitrary._
 import scalaz.scalacheck.ScalazProperties._
 import scalaz.std.anyVal._
 import scalaz.std.option._
-import scalaz.syntax.id._
+import scalaz.syntax.either._
+import scalaz.syntax.ToIdOps
 import scalaz.syntax.std.option._
 
-class AttemptSpec extends ScalaCheckSpec with EqualSyntax {
+class AttemptSpec extends ScalaCheckSpec with EqualSyntax with ToIdOps {
   import Result._
   import ArbitraryAttempt._
   import ArbitraryResult.ArbitraryInvalid

@@ -1,7 +1,7 @@
 package kadai
 
 import org.specs2.Specification
-import scalaz.syntax.id._
+import scalaz.syntax.either._
 
 class EncodingSpec extends Specification {
   import Encoding._

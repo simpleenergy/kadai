@@ -17,7 +17,7 @@ package kadai
 
 import reflect.macros.Context
 
-import scalaz.syntax.id._
+import scalaz.syntax.either._
 import scalaz.syntax.show._
 import Result._
 

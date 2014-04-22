@@ -2,7 +2,7 @@ package kadai
 
 import scalaz.{ Equal, Isomorphism, IsomorphismEqual, IsomorphismMonad, IsomorphismMonoid, Monad, Monoid, ~>, \/ }
 import scalaz.effect.IO
-import scalaz.syntax.id._
+import scalaz.syntax.either._
 import scalaz.syntax.std.option._
 
 /**
